@@ -15,6 +15,7 @@ if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 const UPLOADS_DIR = path.join(DATA_DIR, 'uploads');
 if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 
+// Database (async sqlite3)
 const db = new sqlite3.Database(path.join(DATA_DIR, 'crt.db'));
 
 function run(sql, params=[]) {
@@ -58,6 +59,7 @@ async function initDB() {
     uploaded_at TEXT DEFAULT (datetime('now'))
   )`);
 
+  // Seed admin
   const admin = await get('SELECT id FROM users WHERE username = ?', ['admin']);
   if (!admin) {
     const h = (p) => bcrypt.hashSync(p, 10);
@@ -73,6 +75,7 @@ async function initDB() {
   }
 }
 
+// Multer
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, UPLOADS_DIR),
   filename: (req, file, cb) => {
@@ -80,10 +83,10 @@ const storage = multer.diskStorage({
     cb(null, Date.now() + '-' + Math.random().toString(36).slice(2) + ext);
   }
 });
-const upload = multer({ storage });
+const upload = multer({ storage, limits: { fileSize: 100 * 1024 * 1024 } });
 
-app.use(express.json({ limit: '10gb' }));
-app.use(express.urlencoded({ limit: '10gb', extended: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(UPLOADS_DIR));
 app.use(session({
@@ -109,6 +112,7 @@ async function requireAdmin(req, res, next) {
   next();
 }
 
+// ===== AUTH =====
 app.post('/api/login', async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -143,6 +147,7 @@ app.get('/api/me', async (req, res) => {
   res.json(user);
 });
 
+// ===== ADMIN =====
 app.get('/api/admin/stats', requireAdmin, async (req, res) => {
   const totalMembers = (await get("SELECT COUNT(*) as c FROM users WHERE status='active' AND role NOT IN ('admin')")).c;
   const pendingCount = (await get("SELECT COUNT(*) as c FROM users WHERE status='pending'")).c;
@@ -185,6 +190,27 @@ app.post('/api/admin/members', requireAdmin, async (req, res) => {
   } catch(e) { res.json({ ok: false, error: e.message }); }
 });
 
+app.post('/api/admin/change-role/:id', requireAdmin, async (req, res) => {
+  try {
+    const { role } = req.body;
+    const validRoles = ['member','vice','president','admin'];
+    if (!validRoles.includes(role)) return res.json({ ok: false, error: 'Rôle invalide' });
+    await run("UPDATE users SET role=? WHERE id=?", [role, req.params.id]);
+    res.json({ ok: true });
+  } catch(e) { res.json({ ok: false, error: e.message }); }
+});
+
+app.post('/api/admin/change-password/:id', requireAdmin, async (req, res) => {
+  try {
+    const { password } = req.body;
+    if (!password || password.length < 6) return res.json({ ok: false, error: 'Mot de passe trop court' });
+    const hash = bcrypt.hashSync(password, 10);
+    await run("UPDATE users SET password=? WHERE id=?", [hash, req.params.id]);
+    res.json({ ok: true });
+  } catch(e) { res.json({ ok: false, error: e.message }); }
+});
+
+// ===== ACTIONS =====
 app.get('/api/actions', requireAuth, async (req, res) => {
   const u = req.user;
   let actions;
@@ -223,6 +249,7 @@ app.delete('/api/actions/:id', requireAdmin, async (req, res) => {
   res.json({ ok: true });
 });
 
+// ===== MEDIA =====
 app.post('/api/media/upload', requireAuth, upload.array('files', 20), async (req, res) => {
   if (!req.files || !req.files.length) return res.json({ ok: false, error: 'Aucun fichier' });
   const { action_id } = req.body;
