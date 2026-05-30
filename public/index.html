@@ -42,8 +42,8 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);c
 .overlay.show{display:block}
 
 /* AUTH */
-#authScreen{position:fixed;inset:0;background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 50%,#1a4a8a 100%);z-index:200;display:flex;align-items:center;justify-content:center;padding:16px}
-.auth-pattern{position:absolute;inset:0;opacity:.05;background-image:radial-gradient(circle,#fff 1px,transparent 1px);background-size:30px 30px}
+#authScreen{position:fixed;inset:0;background:var(--navy);z-index:200;display:flex;align-items:center;justify-content:center;padding:16px;overflow:hidden}
+.auth-pattern{position:absolute;inset:0}
 .auth-card{background:#fff;border-radius:20px;padding:2rem;width:100%;max-width:400px;position:relative;z-index:1;box-shadow:0 20px 60px rgba(0,0,0,0.3)}
 .auth-logo{text-align:center;margin-bottom:1.75rem}
 .auth-logo-icon{width:64px;height:64px;background:var(--red3);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:30px;color:var(--red)}
@@ -315,10 +315,40 @@ tr:hover td{background:var(--bg3)}
 <body>
 
 <div id="authScreen">
-  <div class="auth-pattern"></div>
+  <div class="auth-pattern">
+    <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="position:absolute;inset:0;opacity:.06">
+      <defs>
+        <pattern id="cam" x="0" y="0" width="120" height="120" patternUnits="userSpaceOnUse">
+          <!-- Camera body -->
+          <rect x="20" y="35" width="80" height="55" rx="8" fill="none" stroke="white" stroke-width="2.5"/>
+          <!-- Lens outer -->
+          <circle cx="60" cy="62" r="18" fill="none" stroke="white" stroke-width="2.5"/>
+          <!-- Lens inner -->
+          <circle cx="60" cy="62" r="10" fill="none" stroke="white" stroke-width="2"/>
+          <!-- Viewfinder bump -->
+          <rect x="42" y="27" width="22" height="10" rx="3" fill="none" stroke="white" stroke-width="2.5"/>
+          <!-- Flash -->
+          <circle cx="82" cy="44" r="4" fill="none" stroke="white" stroke-width="2"/>
+          <!-- Shutter dots -->
+          <circle cx="27" cy="44" r="2" fill="white"/>
+          <circle cx="33" cy="44" r="2" fill="white"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#cam)"/>
+    </svg>
+    <!-- Red crescent decoration -->
+    <div style="position:absolute;top:-80px;right:-80px;width:300px;height:300px;border-radius:50%;border:3px solid rgba(220,38,38,0.2)"></div>
+    <div style="position:absolute;top:-50px;right:-50px;width:200px;height:200px;border-radius:50%;border:3px solid rgba(220,38,38,0.15)"></div>
+    <div style="position:absolute;bottom:-80px;left:-80px;width:300px;height:300px;border-radius:50%;border:3px solid rgba(220,38,38,0.2)"></div>
+    <div style="position:absolute;bottom:-50px;left:-50px;width:200px;height:200px;border-radius:50%;border:3px solid rgba(220,38,38,0.15)"></div>
+    <!-- Top label -->
+    <div style="position:absolute;top:24px;left:50%;transform:translateX(-50%);white-space:nowrap;text-align:center">
+      <div style="font-size:11px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:3px;font-weight:600">Croissant-Rouge Tunisien</div>
+    </div>
+  </div>
   <div class="auth-card">
     <div class="auth-logo">
-      <div class="auth-logo-icon"><i class="ti ti-camera"></i></div>
+      <img src="/logo.jpg" alt="CRT Megrine" style="width:110px;height:110px;object-fit:contain;margin:0 auto 10px;display:block;border-radius:50%;border:3px solid var(--red4);padding:6px;background:#fff">
       <h1>CRT Megrine</h1>
       <p>Département Média &amp; Communication</p>
     </div>
@@ -333,7 +363,7 @@ tr:hover td{background:var(--bg3)}
       <label class="fl">Mot de passe</label>
       <input class="inp" id="liPass" type="password" placeholder="••••••" onkeydown="if(event.key==='Enter')doLogin()">
       <button class="btn-auth" onclick="doLogin()"><i class="ti ti-login" style="font-size:16px;vertical-align:-2px;margin-right:6px"></i>Se connecter</button>
-      
+     
     </div>
     <div id="registerPanel" style="display:none">
       <div class="auth-msg auth-err" id="regErr"></div>
@@ -367,7 +397,7 @@ tr:hover td{background:var(--bg3)}
   <div class="sidebar" id="sidebar">
     <div class="sb-brand">
       <div class="sb-brand-inner">
-        <div class="sb-icon"><i class="ti ti-movie"></i></div>
+        <div class="sb-icon" style="background:transparent;border:none;padding:0;width:44px;height:44px"><img src="/logo.jpg" alt="CRT" style="width:44px;height:44px;object-fit:contain;border-radius:50%;border:2px solid rgba(255,255,255,0.3)"></div>
         <div><div class="sb-title">CRT Megrine</div><div class="sb-sub">Média</div><div class="sb-live">En ligne</div></div>
       </div>
     </div>
