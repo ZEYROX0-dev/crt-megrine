@@ -2,310 +2,323 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>CRT Megrine — Département Média</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
-  --bg:#070709;
-  --bg2:#0d0d12;
-  --bg3:#12121a;
-  --bg4:#17171f;
-  --surface:#1c1c26;
-  --surface2:#22222e;
-  --border:#252530;
-  --border2:#2e2e3e;
-  --accent:#c8102e;
-  --accent2:#e8192e;
-  --accent3:rgba(200,16,46,0.15);
-  --accent4:rgba(200,16,46,0.08);
-  --gold:#e8a020;
-  --gold2:rgba(232,160,32,0.12);
-  --text:#eeeef5;
-  --text2:#8888a0;
-  --text3:#44444e;
-  --green:#16a34a;
-  --green2:rgba(22,163,74,0.12);
-  --amber:#d97706;
-  --amber2:rgba(217,119,6,0.12);
-  --blue:#2563eb;
-  --blue2:rgba(37,99,235,0.12);
-  --purple:#7c3aed;
-  --purple2:rgba(124,58,237,0.12);
-  --sidebar:240px;
-  --topbar:56px;
-  --r:6px;--r2:10px;--r3:14px;
+  --bg:#f4f6fb;
+  --bg2:#ffffff;
+  --bg3:#f8f9fc;
+  --bg4:#eef0f6;
+  --surface:#ffffff;
+  --border:#e2e6f0;
+  --border2:#cdd2e0;
+  --red:#dc2626;--red2:#ef4444;--red3:#fef2f2;--red4:#fee2e2;
+  --navy:#1e3a5f;--navy2:#2d5282;--navy3:#ebf4ff;
+  --gold:#d97706;--gold2:#fffbeb;
+  --text:#111827;--text2:#4b5563;--text3:#9ca3af;
+  --green:#16a34a;--green2:#f0fdf4;
+  --amber:#d97706;--amber2:#fffbeb;
+  --blue:#2563eb;--blue2:#eff6ff;
+  --purple:#7c3aed;--purple2:#f5f3ff;
+  --sidebar:260px;--topbar:60px;--r:8px;--r2:12px;--r3:16px;
+  --shadow:0 1px 3px rgba(0,0,0,0.08),0 1px 2px rgba(0,0,0,0.04);
+  --shadow2:0 4px 16px rgba(0,0,0,0.1);
 }
-body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
-h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif}
+body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;font-size:14px}
 
 /* LAYOUT */
 #app{display:flex;min-height:100vh}
-.sidebar{width:var(--sidebar);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;position:fixed;top:0;left:0;height:100vh;z-index:50}
-.main-area{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh}
-.topbar{height:var(--topbar);background:rgba(13,13,18,0.95);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:40;backdrop-filter:blur(20px)}
-.page-content{flex:1;padding:24px 28px;max-width:1280px;width:100%;margin:0 auto}
+.sidebar{width:var(--sidebar);background:var(--navy);display:flex;flex-direction:column;flex-shrink:0;position:fixed;top:0;left:0;height:100vh;z-index:50;transition:transform .3s cubic-bezier(.4,0,.2,1);overflow-y:auto}
+.sidebar.closed{transform:translateX(-100%)}
+.main-area{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh;transition:margin .3s}
+.main-area.full{margin-left:0}
+.topbar{height:var(--topbar);background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 20px;position:sticky;top:0;z-index:40;box-shadow:var(--shadow)}
+.page-content{flex:1;padding:20px;max-width:1280px;width:100%;margin:0 auto}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:45;display:none}
+.overlay.show{display:block}
 
 /* AUTH */
-#authScreen{position:fixed;inset:0;background:var(--bg);z-index:200;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.auth-grid{position:absolute;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:40px 40px;opacity:.3}
-.auth-glow{position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(200,16,46,0.15) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none}
-.auth-card{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r3);padding:2.5rem;width:420px;position:relative;z-index:1;box-shadow:0 0 0 1px var(--border),0 32px 64px rgba(0,0,0,0.5)}
-.auth-logo{text-align:center;margin-bottom:2rem}
-.auth-logo-ring{width:72px;height:72px;border-radius:50%;border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;position:relative}
-.auth-logo-ring::before{content:'';position:absolute;inset:-4px;border-radius:50%;border:1px solid rgba(200,16,46,0.2)}
-.auth-logo-ring i{font-size:32px;color:var(--accent)}
-.auth-logo h1{font-size:22px;font-weight:700;color:var(--text);letter-spacing:-.5px}
-.auth-logo p{font-size:12px;color:var(--text2);margin-top:4px;text-transform:uppercase;letter-spacing:1px}
-.auth-tabs{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--bg4);border-radius:var(--r);padding:3px;margin-bottom:1.5rem;border:1px solid var(--border)}
-.auth-tab{padding:9px;text-align:center;border-radius:5px;font-size:13px;font-weight:500;cursor:pointer;color:var(--text2);border:none;background:none;transition:all .2s;font-family:'Inter',sans-serif}
-.auth-tab.active{background:var(--surface);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,0.3)}
-.fl{display:block;font-size:11px;font-weight:600;color:var(--text3);margin-bottom:5px;margin-top:14px;text-transform:uppercase;letter-spacing:.8px}
-.inp{width:100%;padding:10px 13px;background:var(--bg4);border:1px solid var(--border2);border-radius:var(--r);font-size:14px;color:var(--text);outline:none;transition:all .2s;font-family:'Inter',sans-serif}
-.inp:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(200,16,46,0.1)}
-.inp::placeholder{color:var(--text3)}
-select.inp option{background:var(--bg3)}
+#authScreen{position:fixed;inset:0;background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 50%,#1a4a8a 100%);z-index:200;display:flex;align-items:center;justify-content:center;padding:16px}
+.auth-pattern{position:absolute;inset:0;opacity:.05;background-image:radial-gradient(circle,#fff 1px,transparent 1px);background-size:30px 30px}
+.auth-card{background:#fff;border-radius:20px;padding:2rem;width:100%;max-width:400px;position:relative;z-index:1;box-shadow:0 20px 60px rgba(0,0,0,0.3)}
+.auth-logo{text-align:center;margin-bottom:1.75rem}
+.auth-logo-icon{width:64px;height:64px;background:var(--red3);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:30px;color:var(--red)}
+.auth-logo h1{font-size:20px;font-weight:800;color:var(--navy)}
+.auth-logo p{font-size:12px;color:var(--text3);margin-top:3px}
+.auth-tabs{display:grid;grid-template-columns:1fr 1fr;gap:3px;background:var(--bg4);border-radius:10px;padding:3px;margin-bottom:1.25rem}
+.auth-tab{padding:9px;text-align:center;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text3);border:none;background:none;transition:all .2s;font-family:inherit}
+.auth-tab.active{background:#fff;color:var(--navy);box-shadow:var(--shadow)}
+.fl{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px;margin-top:12px}
+.inp{width:100%;padding:10px 13px;background:var(--bg3);border:1.5px solid var(--border);border-radius:var(--r);font-size:14px;color:var(--text);outline:none;transition:all .2s;font-family:inherit}
+.inp:focus{border-color:var(--navy2);background:#fff;box-shadow:0 0 0 3px rgba(45,82,130,0.1)}
 .inp-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.btn-auth{width:100%;padding:11px;background:var(--accent);color:#fff;border:none;border-radius:var(--r);font-size:14px;font-weight:600;cursor:pointer;margin-top:18px;transition:all .2s;font-family:'Space Grotesk',sans-serif;letter-spacing:.3px;position:relative;overflow:hidden}
-.btn-auth:hover{background:var(--accent2);transform:translateY(-1px)}
-.btn-auth:active{transform:translateY(0)}
-.auth-msg{padding:10px 13px;border-radius:var(--r);font-size:13px;margin-top:12px;display:none}
-.auth-err{background:rgba(200,16,46,0.1);border:1px solid rgba(200,16,46,0.3);color:#ff6b7a}
-.auth-ok{background:var(--green2);border:1px solid rgba(22,163,74,0.3);color:#4ade80}
-.auth-hint{margin-top:14px;padding:12px;background:var(--bg4);border-radius:var(--r);font-size:11px;color:var(--text3);border:1px solid var(--border);line-height:1.6}
+.btn-auth{width:100%;padding:12px;background:var(--navy);color:#fff;border:none;border-radius:var(--r2);font-size:14px;font-weight:700;cursor:pointer;margin-top:16px;transition:all .2s;font-family:inherit;letter-spacing:.2px}
+.btn-auth:hover{background:var(--navy2);transform:translateY(-1px);box-shadow:var(--shadow2)}
+.auth-msg{padding:10px 13px;border-radius:var(--r);font-size:13px;margin-top:10px;display:none}
+.auth-err{background:var(--red3);border:1px solid var(--red4);color:var(--red)}
+.auth-ok{background:var(--green2);border:1px solid #bbf7d0;color:var(--green)}
+.auth-hint{margin-top:12px;padding:10px 13px;background:var(--bg4);border-radius:var(--r);font-size:11px;color:var(--text3);line-height:1.6}
 .auth-hint strong{color:var(--text2)}
-.auth-switch{text-align:center;font-size:13px;color:var(--text2);margin-top:14px}
-.auth-switch span{color:var(--accent);cursor:pointer}
+.auth-switch{text-align:center;font-size:13px;color:var(--text3);margin-top:12px}
+.auth-switch span{color:var(--navy);cursor:pointer;font-weight:600}
 
 /* SIDEBAR */
-.sb-brand{padding:16px;border-bottom:1px solid var(--border)}
+.sb-brand{padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,0.08);flex-shrink:0}
 .sb-brand-inner{display:flex;align-items:center;gap:10px}
-.sb-icon{width:40px;height:40px;border-radius:10px;border:1px solid rgba(200,16,46,0.3);display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:20px;background:var(--accent4);flex-shrink:0}
-.sb-title{font-size:14px;font-weight:700;color:var(--text);font-family:'Space Grotesk',sans-serif;letter-spacing:-.3px}
-.sb-sub{font-size:10px;color:var(--text3);margin-top:1px;text-transform:uppercase;letter-spacing:.8px}
-.sb-online{display:inline-flex;align-items:center;gap:4px;font-size:10px;color:var(--green);margin-top:3px}
-.sb-online::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--green);display:inline-block}
-.sb-nav{flex:1;padding:10px 8px;overflow-y:auto}
-.sb-section-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);padding:10px 10px 4px}
-.sb-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:var(--r);cursor:pointer;color:var(--text2);font-size:13px;font-weight:400;transition:all .15s;border:none;background:none;width:100%;text-align:left;font-family:'Inter',sans-serif}
-.sb-item i{font-size:16px;flex-shrink:0;opacity:.6}
-.sb-item:hover{background:var(--surface);color:var(--text)}
-.sb-item:hover i{opacity:1}
-.sb-item.active{background:var(--accent3);color:var(--accent);font-weight:500;border-left:2px solid var(--accent)}
-.sb-item.active i{opacity:1;color:var(--accent)}
-.sb-badge{margin-left:auto;background:var(--accent);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;min-width:20px;text-align:center;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.7}}
-.sb-divider{height:1px;background:var(--border);margin:6px 10px}
-.sb-footer{padding:10px 8px;border-top:1px solid var(--border)}
-.sb-user-card{display:flex;align-items:center;gap:9px;padding:10px;border-radius:var(--r2);background:var(--surface);border:1px solid var(--border)}
-.sb-avatar{width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
-.sb-user-info p{font-size:13px;font-weight:500;color:var(--text);line-height:1.2}
-.sb-user-info span{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
-.sb-logout{display:flex;align-items:center;gap:8px;padding:7px 10px;color:var(--text3);font-size:12px;cursor:pointer;border:none;background:none;width:100%;border-radius:var(--r);margin-top:4px;transition:all .2s;font-family:'Inter',sans-serif}
-.sb-logout:hover{background:rgba(200,16,46,0.08);color:var(--accent)}
-.sb-logout i{font-size:15px}
+.sb-icon{width:40px;height:40px;border-radius:10px;background:var(--red);display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;flex-shrink:0}
+.sb-title{font-size:14px;font-weight:800;color:#fff;letter-spacing:-.3px}
+.sb-sub{font-size:10px;color:rgba(255,255,255,0.4);margin-top:1px;text-transform:uppercase;letter-spacing:.6px}
+.sb-live{display:inline-flex;align-items:center;gap:4px;font-size:10px;color:#4ade80;margin-top:3px}
+.sb-live::before{content:'';width:5px;height:5px;border-radius:50%;background:#4ade80;display:inline-block;animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.sb-nav{flex:1;padding:10px 10px;overflow-y:auto}
+.sb-section{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,0.3);padding:10px 8px 4px}
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--r);cursor:pointer;color:rgba(255,255,255,0.6);font-size:13px;font-weight:500;transition:all .15s;border:none;background:none;width:100%;text-align:left;font-family:inherit}
+.sb-item i{font-size:17px;flex-shrink:0}
+.sb-item:hover{background:rgba(255,255,255,0.08);color:#fff}
+.sb-item.active{background:rgba(255,255,255,0.15);color:#fff;font-weight:600}
+.sb-badge{margin-left:auto;background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px}
+.sb-divider{height:1px;background:rgba(255,255,255,0.08);margin:6px 8px}
+.sb-footer{padding:10px;border-top:1px solid rgba(255,255,255,0.08);flex-shrink:0}
+.sb-user{display:flex;align-items:center;gap:9px;padding:10px;border-radius:var(--r2);background:rgba(255,255,255,0.08)}
+.sb-av{width:36px;height:36px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+.sb-user-name{font-size:13px;font-weight:600;color:#fff;line-height:1.2}
+.sb-user-role{font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:.4px}
+.sb-logout{display:flex;align-items:center;gap:7px;padding:7px 10px;color:rgba(255,255,255,0.4);font-size:12px;cursor:pointer;border:none;background:none;width:100%;border-radius:var(--r);margin-top:4px;transition:all .2s;font-family:inherit}
+.sb-logout:hover{background:rgba(220,38,38,0.2);color:#fca5a5}
 
 /* TOPBAR */
-.topbar-left h2{font-size:17px;font-weight:600;color:var(--text);font-family:'Space Grotesk',sans-serif;letter-spacing:-.3px}
-.topbar-left p{font-size:12px;color:var(--text3);margin-top:1px}
+.topbar-left{display:flex;align-items:center;gap:12px}
+.menu-btn{width:36px;height:36px;border-radius:var(--r);background:var(--bg4);border:1px solid var(--border);display:none;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.menu-btn i{font-size:18px;color:var(--text2)}
+.topbar-left h2{font-size:17px;font-weight:800;color:var(--navy);letter-spacing:-.4px}
+.topbar-left p{font-size:12px;color:var(--text3)}
 .topbar-right{display:flex;align-items:center;gap:8px}
-.tb-btn{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--r);font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:var(--surface);color:var(--text2);transition:all .15s;font-family:'Inter',sans-serif}
-.tb-btn:hover{background:var(--surface2);color:var(--text)}
-.tb-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-.tb-btn.primary:hover{background:var(--accent2)}
+.tb-btn{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--bg2);color:var(--text2);transition:all .15s;font-family:inherit;white-space:nowrap}
+.tb-btn:hover{background:var(--bg4);border-color:var(--border2)}
+.tb-btn.primary{background:var(--navy);border-color:var(--navy);color:#fff}
+.tb-btn.primary:hover{background:var(--navy2)}
+.tb-btn.danger{background:var(--red);border-color:var(--red);color:#fff}
 .tb-btn i{font-size:15px}
 
 /* STAT CARDS */
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:22px}
-.stat-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r2);padding:1.2rem;transition:border-color .2s;position:relative;overflow:hidden}
-.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--card-color,var(--accent));opacity:.6}
-.stat-card:hover{border-color:var(--border2)}
-.sc-icon-wrap{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;font-size:18px}
-.sc-red{background:rgba(200,16,46,0.12);color:var(--accent);--card-color:var(--accent)}
-.sc-green{background:var(--green2);color:var(--green);--card-color:var(--green)}
-.sc-amber{background:var(--amber2);color:var(--amber);--card-color:var(--amber)}
-.sc-blue{background:var(--blue2);color:var(--blue);--card-color:var(--blue)}
-.sc-gold{background:var(--gold2);color:var(--gold);--card-color:var(--gold)}
-.sc-purple{background:var(--purple2);color:var(--purple);--card-color:var(--purple)}
-.sc-num{font-size:30px;font-weight:700;color:var(--text);line-height:1;letter-spacing:-1.5px;font-family:'Space Grotesk',sans-serif}
-.sc-label{font-size:12px;color:var(--text2);margin-top:5px}
-.sc-note{font-size:11px;color:var(--accent);margin-top:5px;display:flex;align-items:center;gap:3px}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:1.1rem 1.25rem;box-shadow:var(--shadow);transition:box-shadow .2s}
+.stat-card:hover{box-shadow:var(--shadow2)}
+.sc-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;font-size:20px}
+.sc-navy{background:var(--navy3);color:var(--navy)}
+.sc-red{background:var(--red3);color:var(--red)}
+.sc-green{background:var(--green2);color:var(--green)}
+.sc-amber{background:var(--amber2);color:var(--amber)}
+.sc-blue{background:var(--blue2);color:var(--blue)}
+.sc-purple{background:var(--purple2);color:var(--purple)}
+.sc-num{font-size:28px;font-weight:800;color:var(--navy);line-height:1;letter-spacing:-1px}
+.sc-label{font-size:12px;color:var(--text3);margin-top:4px;font-weight:500}
+.sc-note{font-size:11px;color:var(--red);margin-top:4px;font-weight:600;display:flex;align-items:center;gap:3px}
 
 /* CARDS */
-.card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;margin-bottom:16px}
-.card-header{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--bg4)}
-.card-header h3{font-size:14px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:8px;font-family:'Space Grotesk',sans-serif}
-.card-header h3 i{font-size:16px;color:var(--text3)}
-.card-body{padding:20px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;margin-bottom:16px;box-shadow:var(--shadow)}
+.card-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--bg3)}
+.card-header h3{font-size:14px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:8px}
+.card-header h3 i{font-size:17px;color:var(--text3)}
+.card-body{padding:18px}
 
 /* TABLE */
-.tbl-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);padding:10px 16px;text-align:left;background:var(--bg4);border-bottom:1px solid var(--border);white-space:nowrap}
-td{padding:11px 16px;color:var(--text2);border-bottom:1px solid var(--border)}
-td:first-child{color:var(--text)}
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:500px}
+th{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);padding:10px 14px;text-align:left;background:var(--bg3);border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:11px 14px;color:var(--text2);border-bottom:1px solid var(--border);vertical-align:middle}
+td:first-child{color:var(--text);font-weight:500}
 tr:last-child td{border-bottom:none}
-tr:hover td{background:var(--surface)}
+tr:hover td{background:var(--bg3)}
 
 /* TAGS */
-.tag{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600;white-space:nowrap}
-.tag-green{background:var(--green2);color:#4ade80}
-.tag-amber{background:var(--amber2);color:#fbbf24}
-.tag-blue{background:var(--blue2);color:#60a5fa}
-.tag-red{background:rgba(200,16,46,0.12);color:#fb7185}
-.tag-gray{background:var(--surface);color:var(--text3)}
-.tag-gold{background:var(--gold2);color:var(--gold)}
-.tag-purple{background:var(--purple2);color:#a78bfa}
-.role-tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
-.rt-admin{background:var(--accent);color:#fff}
-.rt-president{background:rgba(200,16,46,0.15);color:var(--accent)}
-.rt-vice{background:var(--gold2);color:var(--gold)}
-.rt-member{background:var(--surface);color:var(--text3)}
+.tag{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;white-space:nowrap}
+.tag-green{background:var(--green2);color:var(--green)}
+.tag-amber{background:var(--amber2);color:var(--amber)}
+.tag-blue{background:var(--blue2);color:var(--blue)}
+.tag-red{background:var(--red3);color:var(--red)}
+.tag-gray{background:var(--bg4);color:var(--text3)}
+.tag-navy{background:var(--navy3);color:var(--navy)}
+.role-tag{display:inline-block;padding:2px 8px;border-radius:5px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.rt-admin{background:var(--red);color:#fff}
+.rt-president{background:var(--red3);color:var(--red)}
+.rt-vice{background:var(--amber2);color:var(--amber)}
+.rt-member{background:var(--bg4);color:var(--text3)}
 
 /* BUTTONS */
-.btn{display:inline-flex;align-items:center;gap:5px;padding:6px 13px;border-radius:var(--r);font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:var(--surface);color:var(--text2);transition:all .15s;font-family:'Inter',sans-serif}
-.btn:hover{background:var(--surface2);color:var(--text)}
-.btn-red{background:var(--accent);border-color:var(--accent);color:#fff}
-.btn-red:hover{background:var(--accent2)}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 12px;border-radius:var(--r);font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--bg2);color:var(--text2);transition:all .15s;font-family:inherit;white-space:nowrap}
+.btn:hover{background:var(--bg4);border-color:var(--border2);color:var(--text)}
+.btn-navy{background:var(--navy);border-color:var(--navy);color:#fff}
+.btn-navy:hover{background:var(--navy2)}
+.btn-red{background:var(--red);border-color:var(--red);color:#fff}
+.btn-red:hover{background:var(--red2)}
 .btn-green{background:var(--green);border-color:var(--green);color:#fff}
-.btn-amber{background:var(--amber);border-color:var(--amber);color:#fff}
+.btn-sm{padding:5px 10px;font-size:11px}
+.btn-icon{width:32px;height:32px;padding:0;justify-content:center;border-radius:var(--r)}
 .btn i{font-size:13px}
 
 /* MEMBER CARDS */
-.member-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
-.mem-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r2);padding:1.3rem;transition:all .2s}
-.mem-card:hover{border-color:var(--border2);transform:translateY(-1px)}
-.mem-top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
-.mem-avatar{width:44px;height:44px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex-shrink:0;position:relative}
-.mem-status-dot{position:absolute;bottom:0;right:0;width:10px;height:10px;border-radius:50%;border:2px solid var(--bg3)}
-.mem-dot-active{background:var(--green)}
-.mem-dot-pending{background:var(--amber)}
-.mem-dot-rejected{background:var(--accent)}
-.mem-name{font-size:14px;font-weight:600;color:var(--text);font-family:'Space Grotesk',sans-serif}
-.mem-username{font-size:11px;color:var(--text3);margin-top:1px}
+.member-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.mem-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:1.25rem;transition:all .2s;box-shadow:var(--shadow)}
+.mem-card:hover{box-shadow:var(--shadow2);border-color:var(--border2)}
+.mem-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px}
+.mem-avatar{width:44px;height:44px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex-shrink:0;position:relative}
+.mem-dot{position:absolute;bottom:0;right:0;width:10px;height:10px;border-radius:50%;border:2px solid var(--bg2)}
+.dot-active{background:var(--green)}
+.dot-pending{background:var(--amber)}
+.dot-rejected{background:var(--red)}
+.mem-info{flex:1;min-width:0}
+.mem-name{font-size:14px;font-weight:700;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mem-user{font-size:11px;color:var(--text3);margin-top:1px}
 .mem-stats{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
-.mem-actions{display:flex;gap:6px;flex-wrap:wrap}
+.mem-actions-row{display:flex;gap:5px;flex-wrap:wrap}
 
 /* ACTION ITEMS */
 .action-list{display:flex;flex-direction:column;gap:8px}
-.action-item{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r2);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;transition:border-color .2s}
-.action-item:hover{border-color:var(--border2)}
-.action-item-left h4{font-size:14px;font-weight:600;color:var(--text);font-family:'Space Grotesk',sans-serif}
-.action-item-left p{font-size:12px;color:var(--text3);margin-top:3px}
+.action-item{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;box-shadow:var(--shadow);transition:box-shadow .2s}
+.action-item:hover{box-shadow:var(--shadow2)}
+.action-left h4{font-size:14px;font-weight:700;color:var(--navy)}
+.action-left p{font-size:12px;color:var(--text3);margin-top:2px}
 .action-meta{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;align-items:center}
-.action-item-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.action-right{display:flex;gap:6px;align-items:center;flex-shrink:0;flex-wrap:wrap}
 
 /* GALLERY */
-.gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
-.g-item{border-radius:var(--r);overflow:hidden;background:var(--surface);aspect-ratio:1;border:1px solid var(--border);position:relative;cursor:pointer}
+.gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
+.g-item{border-radius:var(--r);overflow:hidden;background:var(--bg4);aspect-ratio:1;border:1px solid var(--border);position:relative;cursor:pointer;box-shadow:var(--shadow)}
 .g-item img,.g-item video{width:100%;height:100%;object-fit:cover;display:block}
-.g-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;gap:8px}
-.g-item:hover .g-overlay{display:flex}
-.g-overlay i{color:#fff;font-size:20px}
-.g-caption{padding:5px 8px;font-size:10px;color:var(--text3);background:var(--bg3);border-top:1px solid var(--border)}
-.g-type-icon{position:absolute;top:6px;left:6px;background:rgba(0,0,0,0.7);color:#fff;border-radius:4px;padding:2px 6px;font-size:10px;font-weight:600;display:flex;align-items:center;gap:3px}
+.g-ov{position:absolute;inset:0;background:rgba(30,58,95,0.6);display:none;align-items:center;justify-content:center;gap:8px}
+.g-item:hover .g-ov{display:flex}
+.g-ov i{color:#fff;font-size:20px}
+.g-cap{padding:5px 8px;font-size:10px;color:var(--text3);background:var(--bg2);border-top:1px solid var(--border);line-height:1.3}
+.g-type{position:absolute;top:6px;left:6px;background:rgba(0,0,0,0.6);color:#fff;border-radius:4px;padding:2px 6px;font-size:10px;font-weight:700;display:flex;align-items:center;gap:3px}
+.g-del{position:absolute;top:5px;right:5px;width:24px;height:24px;background:var(--red);border-radius:50%;display:none;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:12px}
+.g-item:hover .g-del{display:flex}
 
 /* UPLOAD */
-.upload-zone{border:1.5px dashed var(--border2);border-radius:var(--r2);padding:2.5rem 1.5rem;text-align:center;cursor:pointer;transition:all .2s;position:relative;background:var(--bg4)}
-.upload-zone:hover,.upload-zone.drag{border-color:var(--accent);background:var(--accent4)}
-.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-.upload-zone i{font-size:40px;color:var(--text3);display:block;margin-bottom:12px}
-.upload-zone h4{font-size:15px;font-weight:600;color:var(--text);margin-bottom:6px;font-family:'Space Grotesk',sans-serif}
-.upload-zone p{font-size:13px;color:var(--text2)}
-.upload-zone small{font-size:11px;color:var(--text3);margin-top:4px;display:block}
-.preview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px;margin-top:14px}
-.prev-item{aspect-ratio:1;border-radius:var(--r);overflow:hidden;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center}
+.upload-zone{border:2px dashed var(--border2);border-radius:var(--r2);padding:2.5rem 1rem;text-align:center;cursor:pointer;transition:all .2s;position:relative;background:var(--bg3)}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--navy2);background:var(--navy3)}
+.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-zone i{font-size:40px;color:var(--border2);display:block;margin-bottom:10px}
+.upload-zone h4{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:4px}
+.upload-zone p{font-size:13px;color:var(--text3)}
+.preview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px;margin-top:12px}
+.prev-item{aspect-ratio:1;border-radius:var(--r);overflow:hidden;background:var(--bg4);border:1px solid var(--border);display:flex;align-items:center;justify-content:center}
 .prev-item img{width:100%;height:100%;object-fit:cover}
 .prev-item i{font-size:24px;color:var(--text3)}
 
 /* ALERT */
-.alert-banner{border-radius:var(--r);padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px;font-size:13px}
-.alert-warning{background:var(--amber2);border:1px solid rgba(217,119,6,0.3);color:#fbbf24}
+.alert{border-radius:var(--r);padding:12px 15px;margin-bottom:14px;display:flex;align-items:center;gap:10px;font-size:13px;font-weight:500}
+.alert-warning{background:var(--amber2);border:1px solid #fde68a;color:var(--amber)}
 .alert-warning i{font-size:18px;flex-shrink:0}
 
-/* LOG TABLE */
-.log-row{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--border);font-size:12px;transition:background .15s}
-.log-row:hover{background:var(--surface)}
-.log-row:last-child{border-bottom:none}
-.log-time{color:var(--text3);font-family:monospace;font-size:11px;flex-shrink:0;width:140px}
-.log-user{color:var(--accent);font-weight:500;flex-shrink:0;width:120px}
+/* ACCESS CARD */
+.access-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:1.25rem;margin-bottom:10px;box-shadow:var(--shadow)}
+.access-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:10px;flex-wrap:wrap}
+.access-info{display:flex;align-items:center;gap:10px}
+
+/* LOG */
+.log-row{display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid var(--border);font-size:12px}
+.log-row:hover{background:var(--bg3)}
+.log-time{color:var(--text3);font-family:monospace;font-size:11px;flex-shrink:0;min-width:130px}
+.log-user{color:var(--navy);font-weight:700;flex-shrink:0;min-width:100px}
 .log-action{color:var(--text2);flex:1}
 .log-type{flex-shrink:0}
 
 /* MODAL */
-.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:100;display:none;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto;backdrop-filter:blur(4px)}
-.modal-backdrop.open{display:flex}
-.modal{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r3);width:500px;max-width:100%;position:relative;box-shadow:0 32px 64px rgba(0,0,0,0.5)}
-.modal-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--bg4)}
-.modal-header h3{font-size:15px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:8px;font-family:'Space Grotesk',sans-serif}
-.modal-header h3 i{font-size:18px;color:var(--accent)}
-.modal-close{background:none;border:none;cursor:pointer;color:var(--text3);font-size:18px;line-height:1;padding:2px;transition:color .15s}
-.modal-close:hover{color:var(--text)}
-.modal-body{padding:20px}
-.modal-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;background:var(--bg4)}
-.form-row{margin-bottom:14px}
-.form-row label{display:block;font-size:11px;font-weight:600;color:var(--text3);margin-bottom:5px;text-transform:uppercase;letter-spacing:.6px}
-.form-row input,.form-row select,.form-row textarea{width:100%;padding:9px 13px;background:var(--bg4);border:1px solid var(--border2);border-radius:var(--r);font-size:13px;color:var(--text);outline:none;transition:all .2s;font-family:'Inter',sans-serif}
-.form-row input:focus,.form-row select:focus,.form-row textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(200,16,46,0.1)}
+.modal-bd{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;display:none;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto;backdrop-filter:blur(3px)}
+.modal-bd.open{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r3);width:100%;max-width:480px;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.2)}
+.modal-head{padding:16px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--bg3)}
+.modal-head h3{font-size:15px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:8px}
+.modal-head h3 i{font-size:17px;color:var(--red)}
+.modal-x{background:none;border:none;cursor:pointer;color:var(--text3);font-size:18px;line-height:1;padding:2px;transition:color .15s}
+.modal-x:hover{color:var(--text)}
+.modal-body{padding:18px}
+.modal-foot{padding:13px 18px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;background:var(--bg3)}
+.form-row{margin-bottom:13px}
+.form-row label{display:block;font-size:11px;font-weight:700;color:var(--text2);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+.form-row input,.form-row select,.form-row textarea{width:100%;padding:9px 12px;background:var(--bg3);border:1.5px solid var(--border);border-radius:var(--r);font-size:13px;color:var(--text);outline:none;transition:all .2s;font-family:inherit}
+.form-row input:focus,.form-row select:focus,.form-row textarea:focus{border-color:var(--navy2);background:#fff;box-shadow:0 0 0 3px rgba(45,82,130,0.1)}
 .form-row textarea{min-height:80px;resize:vertical}
-select option{background:var(--bg3)}
 .form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.btn-cancel{padding:8px 18px;border-radius:var(--r);font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:var(--surface);color:var(--text2);font-family:'Inter',sans-serif}
-.btn-save{padding:8px 18px;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;border:none;background:var(--accent);color:#fff;font-family:'Inter',sans-serif}
-.btn-save:hover{background:var(--accent2)}
+.btn-cancel{padding:8px 16px;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--bg2);color:var(--text2);font-family:inherit}
+.btn-save{padding:8px 18px;border-radius:var(--r);font-size:13px;font-weight:700;cursor:pointer;border:none;background:var(--navy);color:#fff;font-family:inherit}
+.btn-save:hover{background:var(--navy2)}
+.btn-save.danger{background:var(--red)}
+
+/* CONFIRM DIALOG */
+.confirm-box{background:var(--bg2);border-radius:var(--r2);padding:1.5rem;max-width:360px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.3);text-align:center}
+.confirm-icon{font-size:40px;color:var(--red);display:block;margin-bottom:12px}
+.confirm-box h3{font-size:16px;font-weight:700;color:var(--navy);margin-bottom:6px}
+.confirm-box p{font-size:13px;color:var(--text3);margin-bottom:18px;line-height:1.5}
+.confirm-btns{display:flex;gap:8px;justify-content:center}
+
+/* PENDING */
+.pending-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:var(--bg);text-align:center;padding:2rem}
 
 /* EMPTY */
 .empty{text-align:center;padding:3rem 1rem}
-.empty i{font-size:48px;color:var(--border2);display:block;margin-bottom:14px}
-.empty h4{font-size:15px;font-weight:500;color:var(--text2);margin-bottom:6px;font-family:'Space Grotesk',sans-serif}
+.empty i{font-size:48px;color:var(--border2);display:block;margin-bottom:12px}
+.empty h4{font-size:15px;font-weight:700;color:var(--text2);margin-bottom:5px}
 .empty p{font-size:13px;color:var(--text3)}
 
 /* TOAST */
-#toast{position:fixed;bottom:24px;right:24px;padding:12px 18px;border-radius:var(--r2);font-size:13px;font-weight:500;z-index:999;transform:translateY(80px);opacity:0;transition:all .3s;display:flex;align-items:center;gap:8px;box-shadow:0 8px 24px rgba(0,0,0,0.4)}
+#toast{position:fixed;bottom:20px;right:20px;padding:12px 16px;border-radius:var(--r2);font-size:13px;font-weight:600;z-index:999;transform:translateY(80px);opacity:0;transition:all .3s;display:flex;align-items:center;gap:8px;box-shadow:var(--shadow2);max-width:300px}
 #toast.show{transform:translateY(0);opacity:1}
-#toast.ok{background:#15803d;color:#fff;border:1px solid #16a34a}
-#toast.err{background:#991b1b;color:#fff;border:1px solid var(--accent)}
+#toast.ok{background:var(--green);color:#fff}
+#toast.err{background:var(--red);color:#fff}
 
 /* LIGHTBOX */
-#lightbox{position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:200;display:none;align-items:center;justify-content:center}
-#lightbox.open{display:flex}
-#lightbox img,#lightbox video{max-width:90vw;max-height:85vh;border-radius:var(--r);object-fit:contain}
-#lightbox-close{position:absolute;top:16px;right:20px;color:#fff;font-size:28px;cursor:pointer;background:none;border:none}
-
-/* PENDING */
-.pending-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:var(--bg);text-align:center;padding:2rem}
+#lb{position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:200;display:none;align-items:center;justify-content:center}
+#lb.open{display:flex}
+#lb img,#lb video{max-width:94vw;max-height:88vh;border-radius:var(--r);object-fit:contain}
+#lb-close{position:absolute;top:14px;right:18px;color:#fff;font-size:26px;cursor:pointer;background:none;border:none;opacity:.7}
+#lb-close:hover{opacity:1}
 
 /* SCROLLBAR */
 ::-webkit-scrollbar{width:5px;height:5px}
-::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
-::-webkit-scrollbar-thumb:hover{background:var(--surface2)}
 
-.spinner{width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;display:inline-block}
+.spinner{width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--navy);border-radius:50%;animation:spin .6s linear infinite;display:inline-block;vertical-align:middle}
 @keyframes spin{to{transform:rotate(360deg)}}
+.loading-center{display:flex;align-items:center;justify-content:center;padding:3rem;gap:10px;color:var(--text3);font-size:13px}
 
-/* SECTION HEAD */
-.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.sec-head h2{font-size:15px;font-weight:600;color:var(--text);font-family:'Space Grotesk',sans-serif}
-
-/* ACCESS FORM */
-.access-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r2);padding:1.5rem;margin-bottom:12px}
-.access-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.access-card-info{display:flex;align-items:center;gap:12px}
+/* MOBILE */
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .main-area{margin-left:0!important}
+  .menu-btn{display:flex!important}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .member-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+  .page-content{padding:14px}
+  .form-row-2{grid-template-columns:1fr}
+  .tb-btn span{display:none}
+  .topbar-left h2{font-size:15px}
+  .gallery-grid{grid-template-columns:repeat(auto-fill,minmax(100px,1fr))}
+  table{min-width:400px;font-size:12px}
+  th,td{padding:8px 10px}
+}
+@media(max-width:480px){
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .member-grid{grid-template-columns:1fr 1fr}
+  .auth-card{padding:1.5rem}
+}
 </style>
 </head>
 <body>
 
-<!-- AUTH -->
 <div id="authScreen">
-  <div class="auth-grid"></div>
-  <div class="auth-glow"></div>
+  <div class="auth-pattern"></div>
   <div class="auth-card">
     <div class="auth-logo">
-      <div class="auth-logo-ring"><i class="ti ti-camera"></i></div>
+      <div class="auth-logo-icon"><i class="ti ti-camera"></i></div>
       <h1>CRT Megrine</h1>
       <p>Département Média &amp; Communication</p>
     </div>
@@ -318,13 +331,9 @@ select option{background:var(--bg3)}
       <label class="fl">Nom d'utilisateur</label>
       <input class="inp" id="liUser" type="text" placeholder="ex: sana.trabelsi" autocomplete="username">
       <label class="fl">Mot de passe</label>
-      <input class="inp" id="liPass" type="password" placeholder="••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+      <input class="inp" id="liPass" type="password" placeholder="••••••" onkeydown="if(event.key==='Enter')doLogin()">
       <button class="btn-auth" onclick="doLogin()"><i class="ti ti-login" style="font-size:16px;vertical-align:-2px;margin-right:6px"></i>Se connecter</button>
-      <div class="auth-hint">
-        <strong>Comptes démo :</strong><br>
-        admin / admin123 &nbsp;·&nbsp; president / crt2024<br>
-        vice / crt2024 &nbsp;·&nbsp; sana / crt2024
-      </div>
+      <div class="auth-hint"><strong>Démo :</strong> admin/admin123 · president/crt2024 · sana/crt2024</div>
     </div>
     <div id="registerPanel" style="display:none">
       <div class="auth-msg auth-err" id="regErr"></div>
@@ -333,141 +342,138 @@ select option{background:var(--bg3)}
         <div><label class="fl">Prénom</label><input class="inp" id="rgFirst" placeholder="Sana"></div>
         <div><label class="fl">Nom</label><input class="inp" id="rgLast" placeholder="Trabelsi"></div>
       </div>
-      <label class="fl">Nom d'utilisateur</label>
-      <input class="inp" id="rgUser" placeholder="sana.trabelsi">
-      <label class="fl">Mot de passe</label>
-      <input class="inp" id="rgPass" type="password" placeholder="Min. 6 caractères">
+      <label class="fl">Nom d'utilisateur</label><input class="inp" id="rgUser" placeholder="sana.trabelsi">
+      <label class="fl">Mot de passe</label><input class="inp" id="rgPass" type="password" placeholder="Min. 6 caractères">
       <label class="fl">Rôle demandé</label>
       <select class="inp" id="rgRole"><option value="member">Membre</option><option value="vice">Vice-Président</option></select>
       <button class="btn-auth" onclick="doRegister()"><i class="ti ti-send" style="font-size:16px;vertical-align:-2px;margin-right:6px"></i>Envoyer la demande</button>
-      <p style="font-size:11px;color:var(--text3);text-align:center;margin-top:10px">Compte activé après approbation admin</p>
+      <p style="font-size:11px;color:var(--text3);text-align:center;margin-top:8px">Compte activé après approbation admin</p>
       <div class="auth-switch">Déjà un compte ? <span onclick="switchTab('login')">Se connecter</span></div>
     </div>
   </div>
 </div>
 
-<!-- PENDING -->
 <div id="pendingScreen" style="display:none">
-  <div class="pending-screen">
-    <i class="ti ti-hourglass" style="font-size:60px;color:var(--amber);display:block;margin-bottom:20px"></i>
-    <h2 style="font-size:22px;font-weight:700;margin-bottom:8px">Demande en attente</h2>
-    <p style="font-size:14px;color:var(--text2);max-width:360px;line-height:1.6">Votre demande d'inscription a été envoyée. L'administrateur va l'examiner prochainement.</p>
-    <button class="btn" onclick="doLogout()" style="margin-top:24px"><i class="ti ti-logout"></i> Déconnexion</button>
+  <div class="pending-wrap">
+    <i class="ti ti-hourglass" style="font-size:60px;color:var(--amber);display:block;margin-bottom:16px"></i>
+    <h2 style="font-size:20px;font-weight:800;color:var(--navy);margin-bottom:8px">En attente d'approbation</h2>
+    <p style="font-size:14px;color:var(--text3);max-width:320px;line-height:1.6">Votre demande a été envoyée. L'administrateur va l'examiner.</p>
+    <button class="btn btn-navy" onclick="doLogout()" style="margin-top:20px"><i class="ti ti-logout"></i> Déconnexion</button>
   </div>
 </div>
 
-<!-- MAIN APP -->
 <div id="app" style="display:none">
+  <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
   <div class="sidebar" id="sidebar">
     <div class="sb-brand">
       <div class="sb-brand-inner">
         <div class="sb-icon"><i class="ti ti-movie"></i></div>
-        <div>
-          <div class="sb-title">CRT Megrine</div>
-          <div class="sb-sub">Média</div>
-          <div class="sb-online">En ligne</div>
-        </div>
+        <div><div class="sb-title">CRT Megrine</div><div class="sb-sub">Média</div><div class="sb-live">En ligne</div></div>
       </div>
     </div>
     <nav class="sb-nav" id="sbNav"></nav>
     <div class="sb-footer">
-      <div class="sb-user-card">
-        <div class="sb-avatar" id="sbAv">?</div>
-        <div class="sb-user-info"><p id="sbName">—</p><span id="sbRole">—</span></div>
+      <div class="sb-user">
+        <div class="sb-av" id="sbAv">?</div>
+        <div><div class="sb-user-name" id="sbName">—</div><div class="sb-user-role" id="sbRole">—</div></div>
       </div>
       <button class="sb-logout" onclick="doLogout()"><i class="ti ti-logout"></i> Déconnexion</button>
     </div>
   </div>
-  <div class="main-area">
+  <div class="main-area" id="mainArea">
     <div class="topbar">
-      <div class="topbar-left"><h2 id="pgTitle">Dashboard</h2><p id="pgSub"></p></div>
+      <div class="topbar-left">
+        <div class="menu-btn" onclick="toggleSidebar()"><i class="ti ti-menu-2"></i></div>
+        <div><h2 id="pgTitle">Dashboard</h2><p id="pgSub" style="display:none"></p></div>
+      </div>
       <div class="topbar-right" id="pgActions"></div>
     </div>
     <div class="page-content" id="pgContent"></div>
   </div>
 </div>
 
-<!-- MODAL -->
-<div class="modal-backdrop" id="modal">
+<div class="modal-bd" id="modal">
   <div class="modal">
-    <div class="modal-header">
+    <div class="modal-head">
       <h3 id="modalTitle"><i class="ti ti-circle-plus"></i> Modal</h3>
-      <button class="modal-close" onclick="closeModal()"><i class="ti ti-x"></i></button>
+      <button class="modal-x" onclick="closeModal()"><i class="ti ti-x"></i></button>
     </div>
     <div class="modal-body" id="modalBody"></div>
-    <div class="modal-footer" id="modalFooter">
+    <div class="modal-foot" id="modalFoot">
       <button class="btn-cancel" onclick="closeModal()">Annuler</button>
       <button class="btn-save" id="modalSave">Enregistrer</button>
     </div>
   </div>
 </div>
 
-<div id="lightbox">
-  <button id="lightbox-close" onclick="closeLightbox()"><i class="ti ti-x"></i></button>
-  <div id="lightboxContent"></div>
+<div class="modal-bd" id="confirmDlg" style="align-items:center">
+  <div class="confirm-box">
+    <i class="ti ti-alert-triangle confirm-icon" id="confirmIcon"></i>
+    <h3 id="confirmTitle">Confirmer</h3>
+    <p id="confirmMsg">Êtes-vous sûr ?</p>
+    <div class="confirm-btns">
+      <button class="btn" onclick="document.getElementById('confirmDlg').classList.remove('open')">Annuler</button>
+      <button class="btn btn-red" id="confirmOk">Supprimer</button>
+    </div>
+  </div>
 </div>
+
+<div id="lb"><button id="lb-close" onclick="closeLB()"><i class="ti ti-x"></i></button><div id="lbContent"></div></div>
 <div id="toast"></div>
 
 <script>
-const API='';let CU=null;let selFiles=[];
+const API='';let CU=null;let selFiles=[];const LOGS=[];
 
-// ===== LOGS =====
-const LOGS=[];
-function addLog(action,detail=''){
-  LOGS.unshift({time:new Date().toISOString(),user:CU?CU.username:'system',role:CU?CU.role:'',action,detail});
-  if(LOGS.length>200) LOGS.pop();
-}
+async function api(url,opts={}){const r=await fetch(API+url,{headers:{'Content-Type':'application/json'},...opts});return r.json();}
+async function apiForm(url,data){const r=await fetch(API+url,{method:'POST',body:data});return r.json();}
 
-async function api(url,opts={}){
-  const r=await fetch(API+url,{headers:{'Content-Type':'application/json'},...opts});
-  return r.json();
-}
-async function apiForm(url,data){
-  const r=await fetch(API+url,{method:'POST',body:data});
-  return r.json();
-}
-
-function toast(msg,type='ok'){
-  const t=document.getElementById('toast');
-  t.innerHTML=`<i class="ti ti-${type==='ok'?'circle-check':'alert-circle'}"></i> ${msg}`;
-  t.className='show '+type;
-  setTimeout(()=>t.className='',3200);
-}
+function toast(msg,type='ok'){const t=document.getElementById('toast');t.innerHTML=`<i class="ti ti-${type==='ok'?'circle-check':'alert-circle'}"></i>${msg}`;t.className='show '+type;setTimeout(()=>t.className='',3200);}
 function initials(n){return(n||'?').split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase()}
 function fdate(d){if(!d)return'—';const[y,m,dd]=d.split('-');return`${dd}/${m}/${y}`}
-function ftime(iso){if(!iso)return'—';const d=new Date(iso);return d.toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'})}
+function ftime(iso){if(!iso)return'—';return new Date(iso).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'})}
 function statusLabel(s){return{planifiee:'Planifiée',en_cours:'En cours',terminee:'Terminée'}[s]||s}
-function statusTag(s){
-  const cls={planifiee:'tag-blue',en_cours:'tag-amber',terminee:'tag-green'};
-  return`<span class="tag ${cls[s]||'tag-gray'}">${statusLabel(s)}</span>`;
-}
-function roleTag(r){
-  const cls={admin:'rt-admin',president:'rt-president',vice:'rt-vice',member:'rt-member'};
-  const label={admin:'Admin',president:'Président',vice:'Vice-Pdt',member:'Membre'};
-  return`<span class="role-tag ${cls[r]||'rt-member'}">${label[r]||r}</span>`;
-}
+function statusTag(s){const cls={planifiee:'tag-blue',en_cours:'tag-amber',terminee:'tag-green'};return`<span class="tag ${cls[s]||'tag-gray'}">${statusLabel(s)}</span>`}
+function roleTag(r){const cls={admin:'rt-admin',president:'rt-president',vice:'rt-vice',member:'rt-member'};const lb={admin:'Admin',president:'Président',vice:'Vice-Pdt',member:'Membre'};return`<span class="role-tag ${cls[r]||'rt-member'}">${lb[r]||r}</span>`}
 function isAdmin(u){return u&&['admin','president','vice'].includes(u.role)}
-function bytesLabel(b){if(b>1e6)return(b/1e6).toFixed(1)+' MB';if(b>1e3)return(b/1e3).toFixed(0)+' KB';return(b||0)+' B'}
-function openLightbox(url,type){
-  document.getElementById('lightboxContent').innerHTML=type==='image'?`<img src="${url}">`:`<video src="${url}" controls autoplay style="max-width:90vw;max-height:85vh">`;
-  document.getElementById('lightbox').classList.add('open');
-}
-function closeLightbox(){document.getElementById('lightbox').classList.remove('open')}
-document.getElementById('lightbox').addEventListener('click',e=>{if(e.target===document.getElementById('lightbox'))closeLightbox()});
+function bytesLabel(b){if(b>1e6)return(b/1e6).toFixed(1)+' MB';if(b>1e3)return Math.round(b/1e3)+' KB';return(b||0)+' B'}
+function escJ(s){return(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,' ')}
 
-function openModal(title,icon,body,saveFn,saveLabel='Enregistrer'){
+function openLB(url,type){document.getElementById('lbContent').innerHTML=type==='image'?`<img src="${url}">`:`<video src="${url}" controls autoplay style="max-width:94vw;max-height:88vh">`;document.getElementById('lb').classList.add('open');}
+function closeLB(){document.getElementById('lb').classList.remove('open')}
+document.getElementById('lb').addEventListener('click',e=>{if(e.target===document.getElementById('lb'))closeLB()});
+
+function confirm2(title,msg,fn){
+  document.getElementById('confirmTitle').textContent=title;
+  document.getElementById('confirmMsg').textContent=msg;
+  document.getElementById('confirmOk').onclick=()=>{document.getElementById('confirmDlg').classList.remove('open');fn();};
+  document.getElementById('confirmDlg').classList.add('open');
+}
+
+function openModal(title,icon,body,saveFn,saveLabel='Enregistrer',danger=false){
   document.getElementById('modalTitle').innerHTML=`<i class="ti ti-${icon}"></i> ${title}`;
   document.getElementById('modalBody').innerHTML=body;
   const sf=document.getElementById('modalSave');
-  const mf=document.getElementById('modalFooter');
-  if(saveFn){sf.textContent=saveLabel;sf.onclick=saveFn;mf.style.display='flex';}
+  const mf=document.getElementById('modalFoot');
+  if(saveFn){sf.textContent=saveLabel;sf.onclick=saveFn;sf.className='btn-save'+(danger?' danger':'');mf.style.display='flex';}
   else mf.style.display='none';
   document.getElementById('modal').classList.add('open');
 }
 function closeModal(){document.getElementById('modal').classList.remove('open')}
 document.getElementById('modal').addEventListener('click',e=>{if(e.target===document.getElementById('modal'))closeModal()});
 
-// ===== AUTH =====
+// SIDEBAR
+function toggleSidebar(){
+  const sb=document.getElementById('sidebar');
+  const ov=document.getElementById('overlay');
+  sb.classList.toggle('open');
+  ov.classList.toggle('show');
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
+
+// AUTH
 function switchTab(tab){
   document.querySelectorAll('.auth-tab').forEach((el,i)=>el.classList.toggle('active',['login','register'][i]===tab));
   document.getElementById('loginPanel').style.display=tab==='login'?'block':'none';
@@ -476,13 +482,10 @@ function switchTab(tab){
 async function doLogin(){
   const username=document.getElementById('liUser').value.trim();
   const password=document.getElementById('liPass').value;
-  const err=document.getElementById('loginErr');
-  err.style.display='none';
+  const err=document.getElementById('loginErr');err.style.display='none';
   const r=await api('/api/login',{method:'POST',body:JSON.stringify({username,password})});
   if(!r.ok){err.textContent=r.error;err.style.display='block';return;}
-  CU=r.user;
-  addLog('Connexion',`${CU.name} s'est connecté`);
-  startApp();
+  CU=r.user;addLog('Connexion',`${CU.name} connecté`);startApp();
 }
 async function doRegister(){
   const err=document.getElementById('regErr'),ok=document.getElementById('regOk');
@@ -494,14 +497,12 @@ async function doRegister(){
   const role=document.getElementById('rgRole').value;
   const r=await api('/api/register',{method:'POST',body:JSON.stringify({firstname,lastname,username,password,role})});
   if(!r.ok){err.textContent=r.error;err.style.display='block';return;}
-  ok.textContent="Demande envoyée ! Attendez l'approbation de l'administrateur.";
-  ok.style.display='block';
+  ok.textContent="Demande envoyée ! Attendez l'approbation.";ok.style.display='block';
   ['rgFirst','rgLast','rgUser','rgPass'].forEach(id=>document.getElementById(id).value='');
 }
 async function doLogout(){
-  addLog('Déconnexion',`${CU?CU.name:''} s'est déconnecté`);
-  await api('/api/logout',{method:'POST'});
-  CU=null;
+  addLog('Déconnexion',`${CU?CU.name:''} déconnecté`);
+  await api('/api/logout',{method:'POST'});CU=null;
   document.getElementById('app').style.display='none';
   document.getElementById('pendingScreen').style.display='none';
   document.getElementById('authScreen').style.display='flex';
@@ -517,175 +518,161 @@ function startApp(){
   buildNav();
   if(isAdmin(CU))gotoPage('overview');else gotoPage('myDash');
 }
+function addLog(action,detail){LOGS.unshift({time:new Date().toISOString(),user:CU?CU.username:'?',action,detail});if(LOGS.length>200)LOGS.pop();}
+
 function buildNav(){
   const nav=document.getElementById('sbNav');
   if(isAdmin(CU)){
     nav.innerHTML=`
-      <div class="sb-section-label">Administration</div>
-      <button class="sb-item" onclick="gotoPage('overview')" id="nav-overview"><i class="ti ti-layout-dashboard"></i> Vue générale</button>
-      <button class="sb-item" onclick="gotoPage('requests')" id="nav-requests"><i class="ti ti-user-check"></i> Demandes <span class="sb-badge" id="reqBadge" style="display:none">0</span></button>
-      <button class="sb-item" onclick="gotoPage('members')" id="nav-members"><i class="ti ti-users"></i> Membres</button>
-      <button class="sb-item" onclick="gotoPage('access')" id="nav-access"><i class="ti ti-shield-lock"></i> Accès & Rôles</button>
+      <div class="sb-section">Administration</div>
+      <button class="sb-item" onclick="go('overview')" id="nav-overview"><i class="ti ti-layout-dashboard"></i>Vue générale</button>
+      <button class="sb-item" onclick="go('requests')" id="nav-requests"><i class="ti ti-user-check"></i>Demandes<span class="sb-badge" id="reqBadge" style="display:none">0</span></button>
+      <button class="sb-item" onclick="go('members')" id="nav-members"><i class="ti ti-users"></i>Membres</button>
+      <button class="sb-item" onclick="go('access')" id="nav-access"><i class="ti ti-shield-lock"></i>Accès &amp; Rôles</button>
       <div class="sb-divider"></div>
-      <div class="sb-section-label">Contenu</div>
-      <button class="sb-item" onclick="gotoPage('actions')" id="nav-actions"><i class="ti ti-clipboard-list"></i> Actions</button>
-      <button class="sb-item" onclick="gotoPage('media')" id="nav-media"><i class="ti ti-photo-film"></i> Médiathèque</button>
+      <div class="sb-section">Contenu</div>
+      <button class="sb-item" onclick="go('actions')" id="nav-actions"><i class="ti ti-clipboard-list"></i>Actions</button>
+      <button class="sb-item" onclick="go('media')" id="nav-media"><i class="ti ti-photo-film"></i>Médiathèque</button>
       <div class="sb-divider"></div>
-      <div class="sb-section-label">Système</div>
-      <button class="sb-item" onclick="gotoPage('logs')" id="nav-logs"><i class="ti ti-terminal-2"></i> Logs activité</button>
+      <div class="sb-section">Système</div>
+      <button class="sb-item" onclick="go('logs')" id="nav-logs"><i class="ti ti-terminal-2"></i>Logs</button>
     `;
   }else{
     nav.innerHTML=`
-      <div class="sb-section-label">Mon espace</div>
-      <button class="sb-item" onclick="gotoPage('myDash')" id="nav-myDash"><i class="ti ti-layout-dashboard"></i> Tableau de bord</button>
-      <button class="sb-item" onclick="gotoPage('myActions')" id="nav-myActions"><i class="ti ti-clipboard-list"></i> Mes actions</button>
+      <div class="sb-section">Mon espace</div>
+      <button class="sb-item" onclick="go('myDash')" id="nav-myDash"><i class="ti ti-layout-dashboard"></i>Tableau de bord</button>
+      <button class="sb-item" onclick="go('myActions')" id="nav-myActions"><i class="ti ti-clipboard-list"></i>Mes actions</button>
       <div class="sb-divider"></div>
-      <div class="sb-section-label">Médias</div>
-      <button class="sb-item" onclick="gotoPage('upload')" id="nav-upload"><i class="ti ti-upload"></i> Uploader</button>
-      <button class="sb-item" onclick="gotoPage('myMedia')" id="nav-myMedia"><i class="ti ti-photo"></i> Mes médias</button>
+      <div class="sb-section">Médias</div>
+      <button class="sb-item" onclick="go('upload')" id="nav-upload"><i class="ti ti-upload"></i>Uploader</button>
+      <button class="sb-item" onclick="go('myMedia')" id="nav-myMedia"><i class="ti ti-photo"></i>Mes médias</button>
     `;
   }
   updateReqBadge();
 }
+function go(page){closeSidebar();gotoPage(page);}
 async function updateReqBadge(){
   if(!isAdmin(CU))return;
-  try{
-    const r=await api('/api/admin/requests');
-    const c=r.pending?r.pending.length:0;
-    const b=document.getElementById('reqBadge');
-    if(b){b.textContent=c;b.style.display=c?'inline-block':'none';}
-  }catch(e){}
+  try{const r=await api('/api/admin/requests');const c=r.pending?r.pending.length:0;const b=document.getElementById('reqBadge');if(b){b.textContent=c;b.style.display=c?'inline-block':'none';}}catch(e){}
 }
 function gotoPage(page){
   document.querySelectorAll('.sb-item').forEach(el=>el.classList.remove('active'));
-  const nav=document.getElementById('nav-'+page);
-  if(nav)nav.classList.add('active');
+  const nav=document.getElementById('nav-'+page);if(nav)nav.classList.add('active');
   document.getElementById('pgActions').innerHTML='';
+  const sub=document.getElementById('pgSub');sub.style.display='none';
   const pages={overview:pgOverview,requests:pgRequests,members:pgMembers,access:pgAccess,actions:pgActions,media:pgMedia,logs:pgLogs,myDash:pgMyDash,myActions:pgMyActions,upload:pgUpload,myMedia:pgMyMedia};
   if(pages[page])pages[page]();
 }
 function setPage(title,sub,html,actions=''){
   document.getElementById('pgTitle').textContent=title;
-  document.getElementById('pgSub').textContent=sub;
+  const s=document.getElementById('pgSub');
+  if(sub){s.textContent=sub;s.style.display='block';}else{s.style.display='none';}
   document.getElementById('pgContent').innerHTML=html;
   document.getElementById('pgActions').innerHTML=actions;
 }
+function loading(){return'<div class="loading-center"><div class="spinner"></div> Chargement...</div>';}
 
 // ===== ADMIN PAGES =====
 async function pgOverview(){
-  setPage('Vue générale','Tableau de bord','<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>');
+  setPage('Vue générale','',loading());
   const[stats,actions]=await Promise.all([api('/api/admin/stats'),api('/api/actions')]);
-  const recent=actions.slice(0,6);
   setPage('Vue générale','Dashboard administrateur',`
     <div class="stats-grid">
-      <div class="stat-card sc-red"><div class="sc-icon-wrap sc-red"><i class="ti ti-users"></i></div><div class="sc-num">${stats.totalMembers}</div><div class="sc-label">Membres actifs</div></div>
-      <div class="stat-card sc-amber"><div class="sc-icon-wrap sc-amber"><i class="ti ti-user-check"></i></div><div class="sc-num">${stats.pendingCount}</div><div class="sc-label">En attente</div>${stats.pendingCount?`<div class="sc-note"><i class="ti ti-alert-circle"></i>À examiner</div>`:''}</div>
-      <div class="stat-card sc-blue"><div class="sc-icon-wrap sc-blue"><i class="ti ti-clipboard-list"></i></div><div class="sc-num">${stats.totalActions}</div><div class="sc-label">Actions totales</div></div>
-      <div class="stat-card sc-green"><div class="sc-icon-wrap sc-green"><i class="ti ti-circle-check"></i></div><div class="sc-num">${stats.doneActions}</div><div class="sc-label">Terminées</div></div>
-      <div class="stat-card sc-gold"><div class="sc-icon-wrap sc-gold"><i class="ti ti-photo-film"></i></div><div class="sc-num">${stats.totalMedia}</div><div class="sc-label">Médias uploadés</div></div>
-      <div class="stat-card sc-purple"><div class="sc-icon-wrap sc-purple"><i class="ti ti-activity"></i></div><div class="sc-num">${LOGS.length}</div><div class="sc-label">Logs session</div></div>
+      <div class="stat-card"><div class="sc-icon sc-navy"><i class="ti ti-users"></i></div><div class="sc-num">${stats.totalMembers}</div><div class="sc-label">Membres actifs</div></div>
+      <div class="stat-card"><div class="sc-icon sc-amber"><i class="ti ti-user-check"></i></div><div class="sc-num">${stats.pendingCount}</div><div class="sc-label">En attente</div>${stats.pendingCount?`<div class="sc-note"><i class="ti ti-alert-circle"></i>À examiner</div>`:''}</div>
+      <div class="stat-card"><div class="sc-icon sc-blue"><i class="ti ti-clipboard-list"></i></div><div class="sc-num">${stats.totalActions}</div><div class="sc-label">Actions</div></div>
+      <div class="stat-card"><div class="sc-icon sc-green"><i class="ti ti-circle-check"></i></div><div class="sc-num">${stats.doneActions}</div><div class="sc-label">Terminées</div></div>
+      <div class="stat-card"><div class="sc-icon sc-purple"><i class="ti ti-photo-film"></i></div><div class="sc-num">${stats.totalMedia}</div><div class="sc-label">Médias</div></div>
+      <div class="stat-card"><div class="sc-icon sc-red"><i class="ti ti-activity"></i></div><div class="sc-num">${LOGS.length}</div><div class="sc-label">Logs session</div></div>
     </div>
-    ${stats.pendingCount?`<div class="alert-banner alert-warning"><i class="ti ti-bell-ringing"></i><span><strong>${stats.pendingCount} demande(s)</strong> en attente — <span style="cursor:pointer;text-decoration:underline" onclick="gotoPage('requests')">Examiner →</span></span></div>`:''}
+    ${stats.pendingCount?`<div class="alert alert-warning"><i class="ti ti-bell-ringing"></i><span><strong>${stats.pendingCount} demande(s)</strong> en attente — <span style="cursor:pointer;text-decoration:underline;font-weight:700" onclick="gotoPage('requests')">Examiner →</span></span></div>`:''}
     <div class="card">
-      <div class="card-header"><h3><i class="ti ti-history"></i> Dernières actions</h3><button class="btn btn-red" style="font-size:11px;padding:5px 11px" onclick="openAddAction()"><i class="ti ti-plus"></i> Nouvelle</button></div>
-      <div class="tbl-wrap"><table>
-        <thead><tr><th>Action</th><th>Responsable</th><th>Date</th><th>Statut</th><th>Médias</th></tr></thead>
-        <tbody>${recent.map(a=>`<tr><td><strong>${a.title}</strong></td><td>${a.member_name||'—'}</td><td style="color:var(--text3)">${fdate(a.date)}</td><td>${statusTag(a.status)}</td><td><span class="tag tag-gold"><i class="ti ti-photo" style="font-size:10px"></i>${a.media_count||0}</span></td></tr>`).join('')}</tbody>
-      </table></div>
+      <div class="card-header"><h3><i class="ti ti-history"></i>Dernières actions</h3><button class="btn btn-navy btn-sm" onclick="openAddAction()"><i class="ti ti-plus"></i>Nouvelle</button></div>
+      <div class="tbl-wrap"><table><thead><tr><th>Action</th><th>Responsable</th><th>Date</th><th>Statut</th><th>Médias</th></tr></thead>
+      <tbody>${actions.slice(0,6).map(a=>`<tr><td>${a.title}</td><td>${a.member_name||'—'}</td><td>${fdate(a.date)}</td><td>${statusTag(a.status)}</td><td><span class="tag tag-navy">${a.media_count||0}</span></td></tr>`).join('')}</tbody></table></div>
     </div>
-  `,`<button class="tb-btn primary" onclick="openAddAction()"><i class="ti ti-plus"></i> Nouvelle action</button>`);
+  `,`<button class="tb-btn primary" onclick="openAddAction()"><i class="ti ti-plus"></i><span>Nouvelle action</span></button>`);
 }
 
 async function pgRequests(){
-  setPage('Demandes','','<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>');
-  const r=await api('/api/admin/requests');
-  const all=r.all||[];
-  setPage('Demandes d\'inscription','Approuver ou refuser les comptes',`
-    <div class="card">
-      <div class="card-header"><h3><i class="ti ti-user-check"></i> Toutes les demandes (${all.length})</h3></div>
-      <div class="tbl-wrap"><table>
-        <thead><tr><th>Candidat</th><th>Identifiant</th><th>Rôle</th><th>Date</th><th>Statut</th><th>Action</th></tr></thead>
-        <tbody>${all.length?all.map(u=>`<tr ${u.status==='pending'?'style="background:rgba(217,119,6,0.04)"':''}>
-          <td><div style="display:flex;align-items:center;gap:9px"><div style="width:30px;height:30px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700">${initials(u.name)}</div><span style="font-weight:500">${u.name}</span></div></td>
-          <td style="color:var(--text3)">@${u.username}</td>
-          <td>${roleTag(u.role)}</td>
-          <td style="color:var(--text3);font-size:11px">${u.created_at?u.created_at.slice(0,10):'—'}</td>
-          <td>${u.status==='active'?'<span class="tag tag-green"><i class="ti ti-check" style="font-size:10px"></i>Approuvé</span>':u.status==='pending'?'<span class="tag tag-amber"><i class="ti ti-clock" style="font-size:10px"></i>En attente</span>':'<span class="tag tag-red">Refusé</span>'}</td>
-          <td>${u.status==='pending'?`<div style="display:flex;gap:5px"><button class="btn btn-green" style="padding:4px 9px;font-size:11px" onclick="approveUser(${u.id})"><i class="ti ti-check"></i></button><button class="btn btn-red" style="padding:4px 9px;font-size:11px" onclick="rejectUser(${u.id})"><i class="ti ti-x"></i></button></div>`:'—'}</td>
-        </tr>`).join(''):`<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text3)">Aucune demande</td></tr>`}</tbody>
-      </table></div>
-    </div>
+  setPage('Demandes','',loading());
+  const r=await api('/api/admin/requests');const all=r.all||[];
+  setPage('Demandes d\'inscription',`${all.length} comptes`,`
+    <div class="card"><div class="card-header"><h3><i class="ti ti-user-check"></i>Tous les comptes (${all.length})</h3></div>
+    <div class="tbl-wrap"><table><thead><tr><th>Nom</th><th>Username</th><th>Rôle</th><th>Statut</th><th>Action</th></tr></thead>
+    <tbody>${all.length?all.map(u=>`<tr>
+      <td><div style="display:flex;align-items:center;gap:8px"><div style="width:30px;height:30px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">${initials(u.name)}</div>${u.name}</div></td>
+      <td style="color:var(--text3)">@${u.username}</td>
+      <td>${roleTag(u.role)}</td>
+      <td>${u.status==='active'?'<span class="tag tag-green">Approuvé</span>':u.status==='pending'?'<span class="tag tag-amber">En attente</span>':'<span class="tag tag-red">Refusé</span>'}</td>
+      <td>${u.status==='pending'?`<div style="display:flex;gap:5px">
+        <button class="btn btn-green btn-sm" onclick="approveUser(${u.id})"><i class="ti ti-check"></i></button>
+        <button class="btn btn-red btn-sm" onclick="rejectUser(${u.id})"><i class="ti ti-x"></i></button>
+      </div>`:'—'}</td>
+    </tr>`).join(''):`<tr><td colspan="5" style="text-align:center;color:var(--text3);padding:2rem">Aucune demande</td></tr>`}</tbody></table></div></div>
   `);
 }
-async function approveUser(id){
-  await api(`/api/admin/approve/${id}`,{method:'POST'});
-  addLog('Approbation',`Compte #${id} approuvé`);
-  toast('Compte approuvé ✓');updateReqBadge();pgRequests();
-}
-async function rejectUser(id){
-  await api(`/api/admin/reject/${id}`,{method:'POST'});
-  addLog('Refus',`Compte #${id} refusé`);
-  toast('Demande refusée','err');updateReqBadge();pgRequests();
-}
+async function approveUser(id){await api(`/api/admin/approve/${id}`,{method:'POST'});addLog('Approbation',`Compte #${id} approuvé`);toast('Compte approuvé ✓');updateReqBadge();pgRequests();}
+async function rejectUser(id){await api(`/api/admin/reject/${id}`,{method:'POST'});addLog('Refus',`Compte #${id} refusé`);toast('Demande refusée','err');updateReqBadge();pgRequests();}
 
 async function pgMembers(){
-  setPage('Membres','','<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>');
+  setPage('Membres','',loading());
   const members=await api('/api/admin/members');
   setPage('Membres',`${members.length} membres`,`
-    <div class="member-grid">
-      ${members.map(m=>`<div class="mem-card">
-        <div class="mem-top">
-          <div class="mem-avatar">${initials(m.name)}<div class="mem-status-dot mem-dot-${m.status}"></div></div>
-          <div><div class="mem-name">${m.name}</div><div class="mem-username">@${m.username}</div><div style="margin-top:5px">${roleTag(m.role)}</div></div>
-        </div>
-        <div class="mem-actions">
-          <button class="btn" style="font-size:11px;padding:4px 10px" onclick="viewMember(${m.id})"><i class="ti ti-eye"></i> Voir</button>
-          <button class="btn btn-red" style="font-size:11px;padding:4px 10px" onclick="uploadForMember(${m.id})"><i class="ti ti-upload"></i> Upload</button>
-        </div>
-      </div>`).join('')}
-    </div>
-  `,`<button class="tb-btn primary" onclick="openAddMember()"><i class="ti ti-user-plus"></i> Ajouter membre</button>`);
+    <div class="member-grid">${members.map(m=>`<div class="mem-card">
+      <div class="mem-top">
+        <div class="mem-avatar">${initials(m.name)}<div class="mem-dot dot-${m.status}"></div></div>
+        <div class="mem-info"><div class="mem-name">${m.name}</div><div class="mem-user">@${m.username}</div><div style="margin-top:5px">${roleTag(m.role)}</div></div>
+      </div>
+      <div class="mem-actions-row">
+        <button class="btn btn-sm" onclick="viewMember(${m.id})"><i class="ti ti-eye"></i>Voir</button>
+        <button class="btn btn-navy btn-sm" onclick="uploadForMember(${m.id})"><i class="ti ti-upload"></i>Upload</button>
+        ${m.role!=='admin'?`<button class="btn btn-red btn-sm" onclick="delMember(${m.id},'${escJ(m.name)}')"><i class="ti ti-trash"></i></button>`:''}
+      </div>
+    </div>`).join('')}</div>
+  `,`<button class="tb-btn primary" onclick="openAddMember()"><i class="ti ti-user-plus"></i><span>Ajouter</span></button>`);
+}
+async function delMember(id,name){
+  confirm2('Supprimer le membre',`Supprimer ${name} et toutes ses données ?`,async()=>{
+    const r=await api(`/api/admin/members/${id}`,{method:'DELETE'});
+    if(r.ok){addLog('Suppression membre',`${name} supprimé`);toast('Membre supprimé');pgMembers();}
+    else toast(r.error,'err');
+  });
 }
 
-// ===== ACCESS PAGE =====
 async function pgAccess(){
-  setPage('Accès & Rôles','','<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>');
+  setPage('Accès & Rôles','',loading());
   const members=await api('/api/admin/members');
-  setPage('Accès & Rôles','Gérer les rôles et mots de passe',`
-    <div style="display:flex;flex-direction:column;gap:10px">
-      ${members.map(m=>`<div class="access-card">
-        <div class="access-card-top">
-          <div class="access-card-info">
-            <div style="width:40px;height:40px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0">${initials(m.name)}</div>
-            <div>
-              <div style="font-weight:600;font-size:14px;color:var(--text)">${m.name}</div>
-              <div style="font-size:12px;color:var(--text3);margin-top:2px">@${m.username} &nbsp;·&nbsp; ${m.status==='active'?'<span style="color:var(--green)">✓ Actif</span>':'<span style="color:var(--amber)">⏳ En attente</span>'}</div>
-            </div>
-          </div>
-          <div>${roleTag(m.role)}</div>
+  setPage('Accès & Rôles','Gérer rôles et mots de passe',`
+    <div style="display:flex;flex-direction:column;gap:10px">${members.map(m=>`<div class="access-card">
+      <div class="access-top">
+        <div class="access-info">
+          <div style="width:40px;height:40px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0">${initials(m.name)}</div>
+          <div><div style="font-weight:700;font-size:14px;color:var(--navy)">${m.name}</div><div style="font-size:11px;color:var(--text3)">@${m.username} · ${m.status==='active'?'<span style="color:var(--green)">Actif</span>':'<span style="color:var(--amber)">En attente</span>'}</div></div>
         </div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <select id="role_${m.id}" style="padding:7px 10px;background:var(--bg4);border:1px solid var(--border2);border-radius:var(--r);font-size:12px;color:var(--text);outline:none">
-            <option value="member" ${m.role==='member'?'selected':''}>Membre</option>
-            <option value="vice" ${m.role==='vice'?'selected':''}>Vice-Président</option>
-            <option value="president" ${m.role==='president'?'selected':''}>Président</option>
-            <option value="admin" ${m.role==='admin'?'selected':''}>Admin</option>
-          </select>
-          <button class="btn btn-red" style="font-size:12px;padding:6px 12px" onclick="saveRole(${m.id},'${m.name}')"><i class="ti ti-shield"></i> Sauvegarder rôle</button>
-          <button class="btn" style="font-size:12px;padding:6px 12px" onclick="openChangePassword(${m.id},'${m.name}')"><i class="ti ti-key"></i> Changer mot de passe</button>
-          ${m.status==='pending'?`<button class="btn btn-green" style="font-size:12px;padding:6px 12px" onclick="approveUser(${m.id})"><i class="ti ti-check"></i> Activer</button>`:''}
-        </div>
-      </div>`).join('')}
-    </div>
+        ${roleTag(m.role)}
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <select id="role_${m.id}" style="padding:7px 10px;background:var(--bg3);border:1.5px solid var(--border);border-radius:var(--r);font-size:12px;color:var(--text);outline:none;font-family:inherit">
+          <option value="member" ${m.role==='member'?'selected':''}>Membre</option>
+          <option value="vice" ${m.role==='vice'?'selected':''}>Vice-Président</option>
+          <option value="president" ${m.role==='president'?'selected':''}>Président</option>
+          <option value="admin" ${m.role==='admin'?'selected':''}>Admin</option>
+        </select>
+        <button class="btn btn-navy btn-sm" onclick="saveRole(${m.id},'${escJ(m.name)}')"><i class="ti ti-shield"></i>Sauvegarder rôle</button>
+        <button class="btn btn-sm" onclick="openChangePwd(${m.id},'${escJ(m.name)}')"><i class="ti ti-key"></i>Mot de passe</button>
+        ${m.status==='pending'?`<button class="btn btn-green btn-sm" onclick="approveUser(${m.id})"><i class="ti ti-check"></i>Activer</button>`:''}
+        ${m.role!=='admin'?`<button class="btn btn-red btn-sm" onclick="delMember(${m.id},'${escJ(m.name)}')"><i class="ti ti-trash"></i>Supprimer</button>`:''}
+      </div>
+    </div>`).join('')}</div>
   `);
 }
 async function saveRole(id,name){
   const role=document.getElementById(`role_${id}`).value;
   const r=await api(`/api/admin/change-role/${id}`,{method:'POST',body:JSON.stringify({role})});
-  if(r.ok){addLog('Changement rôle',`${name} → ${role}`);toast(`Rôle de ${name} mis à jour ✓`);pgAccess();}
-  else toast(r.error,'err');
+  if(r.ok){addLog('Changement rôle',`${name} → ${role}`);toast(`Rôle mis à jour ✓`);pgAccess();}else toast(r.error,'err');
 }
-function openChangePassword(id,name){
+function openChangePwd(id,name){
   openModal(`Mot de passe — ${name}`,'key',`
     <div class="form-row"><label>Nouveau mot de passe</label><input class="inp" type="password" id="npwd" placeholder="Min. 6 caractères"></div>
     <div class="form-row"><label>Confirmer</label><input class="inp" type="password" id="cpwd" placeholder="••••••"></div>
@@ -695,82 +682,68 @@ function openChangePassword(id,name){
     if(np.length<6){toast('Trop court','err');return;}
     if(np!==cp){toast('Mots de passe différents','err');return;}
     const r=await api(`/api/admin/change-password/${id}`,{method:'POST',body:JSON.stringify({password:np})});
-    if(r.ok){addLog('Changement password',`Password de ${name} modifié`);toast('Mot de passe mis à jour ✓');closeModal();}
+    if(r.ok){addLog('Changement password',`Password de ${name} modifié`);toast('Mot de passe mis à jour ✓');closeModal();}else toast(r.error,'err');
+  });
+}
+
+async function pgActions(){
+  setPage('Actions','',loading());
+  const actions=await api('/api/actions');
+  setPage('Actions',`${actions.length} actions`,`
+    <div class="card"><div class="card-header"><h3><i class="ti ti-clipboard-list"></i>Toutes les actions</h3><button class="btn btn-navy btn-sm" onclick="openAddAction()"><i class="ti ti-plus"></i>Nouvelle</button></div>
+    <div class="tbl-wrap"><table><thead><tr><th>Titre</th><th>Responsable</th><th>Date</th><th>Statut</th><th>Médias</th><th></th></tr></thead>
+    <tbody>${actions.map(a=>`<tr>
+      <td><div style="font-weight:700">${a.title}</div><div style="font-size:11px;color:var(--text3)">${(a.description||'').slice(0,40)}</div></td>
+      <td>${a.member_name||'—'}</td><td>${fdate(a.date)}</td><td>${statusTag(a.status)}</td>
+      <td><span class="tag tag-navy">${a.media_count||0}</span></td>
+      <td><div style="display:flex;gap:5px">
+        <button class="btn btn-sm btn-icon" onclick="openEditAction(${a.id},'${escJ(a.title)}','${escJ(a.description||'')}',${a.assigned_to||'null'},'${a.date||''}','${a.status}')"><i class="ti ti-edit"></i></button>
+        <button class="btn btn-navy btn-sm btn-icon" onclick="openUploadAction(${a.id})"><i class="ti ti-upload"></i></button>
+        <button class="btn btn-red btn-sm btn-icon" onclick="delAction(${a.id},'${escJ(a.title)}')"><i class="ti ti-trash"></i></button>
+      </div></td>
+    </tr>`).join('')}</tbody></table></div></div>
+  `,`<button class="tb-btn primary" onclick="openAddAction()"><i class="ti ti-plus"></i><span>Nouvelle action</span></button>`);
+}
+async function delAction(id,title){
+  confirm2('Supprimer l\'action',`Supprimer "${title}" et tous ses médias ?`,async()=>{
+    const r=await api(`/api/actions/${id}`,{method:'DELETE'});
+    if(r.ok){addLog('Suppression action',`"${title}" supprimée`);toast('Action supprimée');pgActions();}
     else toast(r.error,'err');
   });
 }
 
-// ===== LOGS PAGE =====
-function pgLogs(){
-  setPage('Logs activité','Historique des actions de la session',`
-    <div class="card">
-      <div class="card-header">
-        <h3><i class="ti ti-terminal-2"></i> Journal d'activité (${LOGS.length})</h3>
-        <button class="btn" style="font-size:11px;padding:5px 11px" onclick="LOGS.length=0;pgLogs()"><i class="ti ti-trash"></i> Vider</button>
-      </div>
-      ${LOGS.length?`<div style="max-height:600px;overflow-y:auto">
-        ${LOGS.map(l=>{
-          const typeMap={Connexion:'tag-green',Déconnexion:'tag-gray',Upload:'tag-gold','Nouvelle action':'tag-blue','Approbation':'tag-green',Refus:'tag-red','Changement rôle':'tag-purple','Changement password':'tag-amber'};
-          const cls=typeMap[l.action]||'tag-gray';
-          return`<div class="log-row">
-            <span class="log-time">${ftime(l.time)}</span>
-            <span class="log-user">@${l.user}</span>
-            <span class="log-type"><span class="tag ${cls}" style="font-size:10px">${l.action}</span></span>
-            <span class="log-action">${l.detail}</span>
-          </div>`;
-        }).join('')}
-      </div>`:`<div class="empty"><i class="ti ti-clipboard-off"></i><h4>Aucun log</h4><p>Les actions s'afficheront ici</p></div>`}
+async function pgMedia(){
+  setPage('Médiathèque','',loading());
+  const media=await api('/api/media');
+  const imgs=media.filter(m=>m.mimetype&&m.mimetype.startsWith('image')).length;
+  const vids=media.length-imgs;
+  setPage('Médiathèque',`${media.length} fichiers · ${imgs} photos · ${vids} vidéos`,`
+    <div class="stats-grid" style="grid-template-columns:repeat(3,minmax(100px,1fr));max-width:380px;margin-bottom:16px">
+      <div class="stat-card"><div class="sc-num">${media.length}</div><div class="sc-label">Total</div></div>
+      <div class="stat-card"><div class="sc-num">${imgs}</div><div class="sc-label">Photos</div></div>
+      <div class="stat-card"><div class="sc-num">${vids}</div><div class="sc-label">Vidéos</div></div>
     </div>
+    <div class="card"><div class="card-header"><h3><i class="ti ti-photo-film"></i>Tous les fichiers</h3></div><div class="card-body">
+      ${media.length?`<div class="gallery-grid">${media.map(m=>{
+        const isImg=m.mimetype&&m.mimetype.startsWith('image');
+        return`<div><div class="g-item" onclick="openLB('${m.url}','${isImg?'image':'video'}')">
+          ${isImg?`<img src="${m.url}" loading="lazy">`:`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--bg4)"><i class="ti ti-video" style="font-size:32px;color:var(--text3)"></i></div>`}
+          <div class="g-type"><i class="ti ti-${isImg?'photo':'video'}" style="font-size:10px"></i>${isImg?'Photo':'Vidéo'}</div>
+          <div class="g-ov"><i class="ti ti-eye"></i></div>
+          <div class="g-del" onclick="event.stopPropagation();delMedia(${m.id})"><i class="ti ti-trash" style="font-size:11px"></i></div>
+        </div><div class="g-cap">${(m.uploader_name||'?').split(' ')[0]} · ${(m.action_title||'—').slice(0,14)}</div></div>`;
+      }).join('')}</div>`:`<div class="empty"><i class="ti ti-photo-off"></i><h4>Aucun média</h4><p>Aucun fichier uploadé</p></div>`}
+    </div></div>
   `);
 }
 
-async function pgActions(){
-  setPage('Actions','','<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>');
-  const actions=await api('/api/actions');
-  setPage('Actions',`${actions.length} actions`,`
-    <div class="card">
-      <div class="card-header"><h3><i class="ti ti-clipboard-list"></i> Toutes les actions</h3><button class="btn btn-red" style="font-size:11px;padding:5px 11px" onclick="openAddAction()"><i class="ti ti-plus"></i> Nouvelle</button></div>
-      <div class="tbl-wrap"><table>
-        <thead><tr><th>Action</th><th>Responsable</th><th>Date</th><th>Statut</th><th>Médias</th><th></th></tr></thead>
-        <tbody>${actions.map(a=>`<tr>
-          <td><strong>${a.title}</strong><div style="font-size:11px;color:var(--text3);margin-top:2px">${(a.description||'').slice(0,45)}</div></td>
-          <td>${a.member_name||'—'}</td>
-          <td style="color:var(--text3)">${fdate(a.date)}</td>
-          <td>${statusTag(a.status)}</td>
-          <td><span class="tag tag-gold"><i class="ti ti-photo" style="font-size:10px"></i>${a.media_count||0}</span></td>
-          <td><div style="display:flex;gap:5px">
-            <button class="btn" style="padding:4px 8px;font-size:11px" onclick="openEditAction(${a.id},'${escJs(a.title)}','${escJs(a.description||'')}',${a.assigned_to||'null'},'${a.date||''}','${a.status}')"><i class="ti ti-edit"></i></button>
-            <button class="btn btn-red" style="padding:4px 8px;font-size:11px" onclick="openUploadAction(${a.id})"><i class="ti ti-upload"></i></button>
-          </div></td>
-        </tr>`).join('')}</tbody>
-      </table></div>
-    </div>
-  `,`<button class="tb-btn primary" onclick="openAddAction()"><i class="ti ti-plus"></i> Nouvelle action</button>`);
-}
-
-async function pgMedia(){
-  setPage('Médiathèque','','<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>');
-  const media=await api('/api/media');
-  const imgs=media.filter(m=>m.mimetype&&m.mimetype.startsWith('image')).length;
-  const vids=media.filter(m=>m.mimetype&&m.mimetype.startsWith('video')).length;
-  setPage('Médiathèque',`${media.length} fichiers — ${imgs} photos · ${vids} vidéos`,`
-    <div class="stats-grid" style="grid-template-columns:repeat(3,minmax(120px,1fr));max-width:380px;margin-bottom:18px">
-      <div class="stat-card sc-gold"><div class="sc-num">${media.length}</div><div class="sc-label">Total</div></div>
-      <div class="stat-card sc-blue"><div class="sc-num">${imgs}</div><div class="sc-label">Photos</div></div>
-      <div class="stat-card sc-purple"><div class="sc-num">${vids}</div><div class="sc-label">Vidéos</div></div>
-    </div>
-    <div class="card">
-      <div class="card-header"><h3><i class="ti ti-photo-film"></i> Tous les fichiers</h3></div>
-      <div class="card-body">
-        ${media.length?`<div class="gallery-grid">${media.map(m=>{
-          const isImg=m.mimetype&&m.mimetype.startsWith('image');
-          return`<div><div class="g-item" onclick="openLightbox('${m.url}','${isImg?'image':'video'}')">
-            ${isImg?`<img src="${m.url}" loading="lazy">`:`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center"><i class="ti ti-video" style="font-size:32px;color:var(--text3)"></i></div>`}
-            <div class="g-type-icon"><i class="ti ti-${isImg?'photo':'video'}" style="font-size:10px"></i>${isImg?'Photo':'Vidéo'}</div>
-            <div class="g-overlay"><i class="ti ti-eye"></i></div>
-          </div><div class="g-caption">${(m.uploader_name||'?').split(' ')[0]} · ${(m.action_title||'—').slice(0,14)}</div></div>`;
-        }).join('')}</div>`:`<div class="empty"><i class="ti ti-photo-off"></i><h4>Aucun média</h4><p>Aucun fichier uploadé</p></div>`}
-      </div>
+function pgLogs(){
+  setPage('Logs','Historique de la session',`
+    <div class="card"><div class="card-header"><h3><i class="ti ti-terminal-2"></i>Journal (${LOGS.length})</h3><button class="btn btn-sm" onclick="LOGS.length=0;pgLogs()"><i class="ti ti-trash"></i>Vider</button></div>
+    ${LOGS.length?`<div style="max-height:500px;overflow-y:auto">${LOGS.map(l=>{
+      const cls={Connexion:'tag-green',Déconnexion:'tag-gray',Upload:'tag-navy','Nouvelle action':'tag-blue','Approbation':'tag-green',Refus:'tag-red','Suppression membre':'tag-red','Suppression action':'tag-red','Suppression média':'tag-red','Changement rôle':'tag-amber','Changement password':'tag-amber'}[l.action]||'tag-gray';
+      return`<div class="log-row"><span class="log-time">${ftime(l.time)}</span><span class="log-user">@${l.user}</span><span class="log-type"><span class="tag ${cls}" style="font-size:10px">${l.action}</span></span><span class="log-action">${l.detail}</span></div>`;
+    }).join('')}</div>`:`<div class="empty"><i class="ti ti-clipboard-off"></i><h4>Aucun log</h4><p>Les actions s'afficheront ici</p></div>`}
     </div>
   `);
 }
@@ -778,137 +751,125 @@ async function pgMedia(){
 // ===== MEMBER PAGES =====
 async function pgMyDash(){
   const[actions,media]=await Promise.all([api('/api/actions'),api('/api/media')]);
-  setPage('Mon tableau de bord',`Bienvenue, ${CU.name.split(' ')[0]} !`,`
+  setPage(`Bonjour, ${CU.name.split(' ')[0]} !`,'',`
     <div class="stats-grid">
-      <div class="stat-card sc-blue"><div class="sc-icon-wrap sc-blue"><i class="ti ti-clipboard-list"></i></div><div class="sc-num">${actions.length}</div><div class="sc-label">Actions assignées</div></div>
-      <div class="stat-card sc-green"><div class="sc-icon-wrap sc-green"><i class="ti ti-circle-check"></i></div><div class="sc-num">${actions.filter(a=>a.status==='terminee').length}</div><div class="sc-label">Terminées</div></div>
-      <div class="stat-card sc-gold"><div class="sc-icon-wrap sc-gold"><i class="ti ti-photo-film"></i></div><div class="sc-num">${media.length}</div><div class="sc-label">Médias uploadés</div></div>
+      <div class="stat-card"><div class="sc-icon sc-blue"><i class="ti ti-clipboard-list"></i></div><div class="sc-num">${actions.length}</div><div class="sc-label">Actions assignées</div></div>
+      <div class="stat-card"><div class="sc-icon sc-green"><i class="ti ti-circle-check"></i></div><div class="sc-num">${actions.filter(a=>a.status==='terminee').length}</div><div class="sc-label">Terminées</div></div>
+      <div class="stat-card"><div class="sc-icon sc-purple"><i class="ti ti-photo-film"></i></div><div class="sc-num">${media.length}</div><div class="sc-label">Médias uploadés</div></div>
     </div>
-    <div class="card">
-      <div class="card-header"><h3><i class="ti ti-clipboard-list"></i> Mes actions</h3></div>
-      <div class="card-body">
-        ${actions.length?`<div class="action-list">${actions.map(a=>`<div class="action-item">
-          <div class="action-item-left">
-            <h4>${a.title}</h4>
-            <p>${a.description||''}</p>
-            <div class="action-meta">${statusTag(a.status)}<span class="tag tag-gray"><i class="ti ti-calendar" style="font-size:10px"></i>${fdate(a.date)}</span><span class="tag tag-gold"><i class="ti ti-photo" style="font-size:10px"></i>${a.media_count||0}</span></div>
-          </div>
-          <button class="btn btn-red" onclick="gotoPageUploadFor(${a.id})"><i class="ti ti-upload"></i> Upload</button>
-        </div>`).join('')}</div>`:`<div class="empty"><i class="ti ti-clipboard-off"></i><h4>Aucune action</h4><p>Aucune action assignée</p></div>`}
-      </div>
-    </div>
-  `,`<button class="tb-btn primary" onclick="gotoPage('upload')"><i class="ti ti-upload"></i> Uploader</button>`);
+    <div class="card"><div class="card-header"><h3><i class="ti ti-clipboard-list"></i>Mes actions</h3></div><div class="card-body">
+      ${actions.length?`<div class="action-list">${actions.map(a=>`<div class="action-item">
+        <div class="action-left"><h4>${a.title}</h4><p>${a.description||''}</p>
+          <div class="action-meta">${statusTag(a.status)}<span class="tag tag-gray"><i class="ti ti-calendar" style="font-size:10px"></i>${fdate(a.date)}</span><span class="tag tag-navy"><i class="ti ti-photo" style="font-size:10px"></i>${a.media_count||0}</span></div>
+        </div>
+        <button class="btn btn-navy btn-sm" onclick="gotoUploadFor(${a.id})"><i class="ti ti-upload"></i>Upload</button>
+      </div>`).join('')}</div>`:`<div class="empty"><i class="ti ti-clipboard-off"></i><h4>Aucune action</h4><p>L'admin va vous assigner des actions</p></div>`}
+    </div></div>
+  `,`<button class="tb-btn primary" onclick="gotoPage('upload')"><i class="ti ti-upload"></i><span>Uploader</span></button>`);
 }
 
 async function pgMyActions(){
   const actions=await api('/api/actions');
   setPage('Mes actions',`${actions.length} actions`,`
-    <div class="action-list">
-      ${actions.length?actions.map(a=>`<div class="action-item">
-        <div class="action-item-left">
-          <h4>${a.title}</h4><p>${a.description||''}</p>
-          <div class="action-meta">${statusTag(a.status)}<span class="tag tag-gray"><i class="ti ti-calendar" style="font-size:10px"></i>${fdate(a.date)}</span><span class="tag tag-gold"><i class="ti ti-photo" style="font-size:10px"></i>${a.media_count||0}</span></div>
-        </div>
-        <button class="btn btn-red" onclick="gotoPageUploadFor(${a.id})"><i class="ti ti-upload"></i> Upload</button>
-      </div>`).join(''):`<div class="empty"><i class="ti ti-clipboard-off"></i><h4>Aucune action</h4><p>L'administrateur vous assignera des actions</p></div>`}
+    <div class="action-list">${actions.length?actions.map(a=>`<div class="action-item">
+      <div class="action-left"><h4>${a.title}</h4><p>${a.description||''}</p>
+        <div class="action-meta">${statusTag(a.status)}<span class="tag tag-gray"><i class="ti ti-calendar" style="font-size:10px"></i>${fdate(a.date)}</span><span class="tag tag-navy">${a.media_count||0} médias</span></div>
+      </div>
+      <button class="btn btn-navy btn-sm" onclick="gotoUploadFor(${a.id})"><i class="ti ti-upload"></i>Upload</button>
+    </div>`).join(''):`<div class="empty"><i class="ti ti-clipboard-off"></i><h4>Aucune action</h4><p>Aucune action assignée</p></div>`}
     </div>
   `);
 }
 
-let uploadTargetAction=null;
+let uploadTarget=null;
 async function pgUpload(){
-  const actions=await api('/api/actions');
-  selFiles=[];
+  const actions=await api('/api/actions');selFiles=[];
   setPage('Uploader des médias','Photos et vidéos',`
     <div class="card"><div class="card-body">
       <div class="form-row"><label>Action concernée</label>
-        <select class="inp" id="uploadActionSel">
-          <option value="">-- Sans action spécifique --</option>
-          ${actions.map(a=>`<option value="${a.id}" ${uploadTargetAction==a.id?'selected':''}>${a.title}</option>`).join('')}
+        <select class="inp" id="uploadSel">
+          <option value="">-- Sans action --</option>
+          ${actions.map(a=>`<option value="${a.id}" ${uploadTarget==a.id?'selected':''}>${a.title}</option>`).join('')}
         </select>
       </div>
-      <div class="form-row" style="margin-top:16px"><label>Fichiers</label>
-        <div class="upload-zone" id="dropZone">
+      <div class="form-row" style="margin-top:14px"><label>Fichiers</label>
+        <div class="upload-zone" id="dz">
           <input type="file" multiple accept="image/*,video/*" onchange="handleFiles(event)">
           <i class="ti ti-cloud-upload"></i>
           <h4>Glissez vos fichiers ici</h4>
-          <p>ou cliquez pour sélectionner</p>
-          <small>Images · Vidéos · Aucune limite de taille</small>
+          <p>Photos &amp; vidéos · Aucune limite de taille</p>
         </div>
-        <div class="preview-grid" id="previewGrid"></div>
+        <div class="preview-grid" id="prevGrid"></div>
       </div>
-      <div id="uploadStatus" style="margin-top:10px;font-size:13px;color:var(--text3)"></div>
-      <button class="tb-btn primary" onclick="doUpload()" style="margin-top:14px"><i class="ti ti-upload"></i> Uploader les fichiers</button>
+      <div id="upStatus" style="font-size:13px;color:var(--text3);margin-top:8px"></div>
+      <button class="tb-btn primary" onclick="doUpload()" style="margin-top:14px"><i class="ti ti-upload"></i><span>Uploader</span></button>
     </div></div>
   `);
-  uploadTargetAction=null;
-  const dz=document.getElementById('dropZone');
+  uploadTarget=null;
+  const dz=document.getElementById('dz');
   dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag')});
   dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
   dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag');handleFiles({target:{files:e.dataTransfer.files}})});
 }
-function gotoPageUploadFor(actionId){uploadTargetAction=actionId;gotoPage('upload');}
+function gotoUploadFor(id){uploadTarget=id;gotoPage('upload');}
 function handleFiles(e){
   const files=Array.from(e.target.files||[]);
   selFiles=[...selFiles,...files];
-  const grid=document.getElementById('previewGrid');
+  const grid=document.getElementById('prevGrid');
   files.forEach(f=>{
     const div=document.createElement('div');div.className='prev-item';
     if(f.type.startsWith('image')){const r=new FileReader();r.onload=ev=>{div.innerHTML=`<img src="${ev.target.result}">`;};r.readAsDataURL(f);}
     else div.innerHTML=`<i class="ti ti-video"></i>`;
     grid.appendChild(div);
   });
-  document.getElementById('uploadStatus').textContent=`${selFiles.length} fichier(s) sélectionné(s)`;
+  document.getElementById('upStatus').textContent=`${selFiles.length} fichier(s) sélectionné(s)`;
 }
 async function doUpload(){
-  if(!selFiles.length){toast('Sélectionnez au moins un fichier','err');return;}
-  const actionId=document.getElementById('uploadActionSel')?.value;
-  const fd=new FormData();
-  selFiles.forEach(f=>fd.append('files',f));
-  if(actionId)fd.append('action_id',actionId);
-  document.getElementById('uploadStatus').innerHTML='<div class="spinner" style="display:inline-block;margin-right:8px"></div>Upload en cours...';
+  if(!selFiles.length){toast('Sélectionnez un fichier','err');return;}
+  const aid=document.getElementById('uploadSel')?.value;
+  const fd=new FormData();selFiles.forEach(f=>fd.append('files',f));
+  if(aid)fd.append('action_id',aid);
+  document.getElementById('upStatus').innerHTML='<div class="spinner" style="display:inline-block;margin-right:6px"></div>Upload en cours...';
   try{
     const r=await apiForm('/api/media/upload',fd);
-    if(r.ok){
-      addLog('Upload',`${r.files.length} fichier(s) uploadé(s) par ${CU.name}`);
-      toast(`${r.files.length} fichier(s) uploadé(s) ✓`);
-      selFiles=[];document.getElementById('previewGrid').innerHTML='';
-      document.getElementById('uploadStatus').textContent='';
-      document.getElementById('uploadActionSel').value='';
-    }else toast(r.error||'Erreur upload','err');
+    if(r.ok){addLog('Upload',`${r.files.length} fichier(s) par ${CU.name}`);toast(`${r.files.length} fichier(s) uploadé(s) ✓`);selFiles=[];document.getElementById('prevGrid').innerHTML='';document.getElementById('upStatus').textContent='';}
+    else toast(r.error||'Erreur','err');
   }catch(e){toast('Erreur upload','err');}
 }
+
 async function pgMyMedia(){
   const media=await api('/api/media');
   setPage('Mes médias',`${media.length} fichiers`,`
     <div class="card"><div class="card-body">
       ${media.length?`<div class="gallery-grid">${media.map(m=>{
         const isImg=m.mimetype&&m.mimetype.startsWith('image');
-        return`<div><div class="g-item" onclick="openLightbox('${m.url}','${isImg?'image':'video'}')">
+        return`<div><div class="g-item" onclick="openLB('${m.url}','${isImg?'image':'video'}')">
           ${isImg?`<img src="${m.url}" loading="lazy">`:`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center"><i class="ti ti-video" style="font-size:32px;color:var(--text3)"></i></div>`}
-          <div class="g-type-icon"><i class="ti ti-${isImg?'photo':'video'}" style="font-size:10px"></i></div>
-          <div class="g-overlay"><i class="ti ti-eye"></i><i class="ti ti-trash" onclick="event.stopPropagation();delMedia(${m.id})"></i></div>
-        </div><div class="g-caption">${m.action_title?(m.action_title.slice(0,18)):''} · ${bytesLabel(m.size||0)}</div></div>`;
-      }).join('')}</div>`:`<div class="empty"><i class="ti ti-photo-off"></i><h4>Aucun média</h4><p>Uploadez vos premières photos et vidéos</p></div>`}
+          <div class="g-type"><i class="ti ti-${isImg?'photo':'video'}" style="font-size:10px"></i></div>
+          <div class="g-ov"><i class="ti ti-eye"></i></div>
+          <div class="g-del" onclick="event.stopPropagation();delMedia(${m.id})"><i class="ti ti-trash" style="font-size:11px"></i></div>
+        </div><div class="g-cap">${m.action_title?m.action_title.slice(0,18):'—'} · ${bytesLabel(m.size||0)}</div></div>`;
+      }).join('')}</div>`:`<div class="empty"><i class="ti ti-photo-off"></i><h4>Aucun média</h4><p>Uploadez vos premières photos</p></div>`}
     </div></div>
-  `,`<button class="tb-btn primary" onclick="gotoPage('upload')"><i class="ti ti-upload"></i> Uploader</button>`);
-}
-async function delMedia(id){
-  if(!confirm('Supprimer ce fichier ?'))return;
-  const r=await api(`/api/media/${id}`,{method:'DELETE'});
-  if(r.ok){addLog('Suppression média',`Fichier #${id} supprimé`);toast('Fichier supprimé');pgMyMedia();}
-  else toast('Erreur','err');
+  `,`<button class="tb-btn primary" onclick="gotoPage('upload')"><i class="ti ti-upload"></i><span>Uploader</span></button>`);
 }
 
-// ===== MODALS =====
-function escJs(s){return(s||'').replace(/'/g,"\\'").replace(/\n/g,' ')}
+async function delMedia(id){
+  confirm2('Supprimer le fichier','Ce fichier sera supprimé définitivement.',async()=>{
+    const r=await api(`/api/media/${id}`,{method:'DELETE'});
+    if(r.ok){addLog('Suppression média',`Fichier #${id} supprimé`);toast('Fichier supprimé');const page=isAdmin(CU)?pgMedia:pgMyMedia;page();}
+    else toast(r.error,'err');
+  });
+}
+
+// MODAL FORMS
 async function openAddAction(){
   const members=await api('/api/admin/members');
-  const mOpts=members.filter(m=>m.status==='active'&&m.role==='member').map(m=>`<option value="${m.id}">${m.name}</option>`).join('');
+  const opts=members.filter(m=>m.status==='active'&&m.role==='member').map(m=>`<option value="${m.id}">${m.name}</option>`).join('');
   openModal('Nouvelle action','circle-plus',`
     <div class="form-row"><label>Titre *</label><input class="inp" id="at" placeholder="Campagne don de sang"></div>
     <div class="form-row"><label>Description</label><textarea class="inp" id="ad"></textarea></div>
-    <div class="form-row"><label>Responsable</label><select class="inp" id="am"><option value="">— Choisir —</option>${mOpts}</select></div>
+    <div class="form-row"><label>Responsable</label><select class="inp" id="am"><option value="">— Choisir —</option>${opts}</select></div>
     <div class="form-row-2">
       <div class="form-row" style="margin-bottom:0"><label>Date</label><input class="inp" id="adate" type="date" value="${new Date().toISOString().slice(0,10)}"></div>
       <div class="form-row" style="margin-bottom:0"><label>Statut</label><select class="inp" id="ast"><option value="planifiee">Planifiée</option><option value="en_cours">En cours</option><option value="terminee">Terminée</option></select></div>
@@ -917,16 +878,16 @@ async function openAddAction(){
     const title=document.getElementById('at').value.trim();
     if(!title){toast('Titre requis','err');return;}
     const r=await api('/api/actions',{method:'POST',body:JSON.stringify({title,description:document.getElementById('ad').value,assigned_to:document.getElementById('am').value||null,date:document.getElementById('adate').value,status:document.getElementById('ast').value})});
-    if(r.ok){addLog('Nouvelle action',`"${title}" créée`);toast('Action créée ✓');closeModal();pgActions();}else toast(r.error,'err');
+    if(r.ok){addLog('Nouvelle action',`"${title}"`);toast('Action créée ✓');closeModal();pgActions();}else toast(r.error,'err');
   });
 }
 async function openEditAction(id,title,desc,assignedTo,date,status){
   const members=await api('/api/admin/members');
-  const mOpts=members.filter(m=>m.status==='active'&&m.role==='member').map(m=>`<option value="${m.id}" ${m.id==assignedTo?'selected':''}>${m.name}</option>`).join('');
+  const opts=members.filter(m=>m.status==='active'&&m.role==='member').map(m=>`<option value="${m.id}" ${m.id==assignedTo?'selected':''}>${m.name}</option>`).join('');
   openModal('Modifier action','edit',`
     <div class="form-row"><label>Titre *</label><input class="inp" id="et" value="${title}"></div>
     <div class="form-row"><label>Description</label><textarea class="inp" id="ed">${desc}</textarea></div>
-    <div class="form-row"><label>Responsable</label><select class="inp" id="em"><option value="">— Choisir —</option>${mOpts}</select></div>
+    <div class="form-row"><label>Responsable</label><select class="inp" id="em"><option value="">— Choisir —</option>${opts}</select></div>
     <div class="form-row-2">
       <div class="form-row" style="margin-bottom:0"><label>Date</label><input class="inp" id="edate" type="date" value="${date}"></div>
       <div class="form-row" style="margin-bottom:0"><label>Statut</label><select class="inp" id="est"><option value="planifiee" ${status==='planifiee'?'selected':''}>Planifiée</option><option value="en_cours" ${status==='en_cours'?'selected':''}>En cours</option><option value="terminee" ${status==='terminee'?'selected':''}>Terminée</option></select></div>
@@ -935,22 +896,22 @@ async function openEditAction(id,title,desc,assignedTo,date,status){
     const t=document.getElementById('et').value.trim();
     if(!t){toast('Titre requis','err');return;}
     const r=await api(`/api/actions/${id}`,{method:'PUT',body:JSON.stringify({title:t,description:document.getElementById('ed').value,assigned_to:document.getElementById('em').value||null,date:document.getElementById('edate').value,status:document.getElementById('est').value})});
-    if(r.ok){addLog('Modif action',`Action #${id} modifiée`);toast('Action modifiée ✓');closeModal();pgActions();}else toast(r.error,'err');
+    if(r.ok){addLog('Modif action',`Action #${id}`);toast('Action modifiée ✓');closeModal();pgActions();}else toast(r.error,'err');
   });
 }
 async function openAddMember(){
   openModal('Ajouter un membre','user-plus',`
     <div class="form-row"><label>Nom complet *</label><input class="inp" id="mn" placeholder="Sana Trabelsi"></div>
     <div class="form-row-2">
-      <div class="form-row" style="margin-bottom:0"><label>Nom d'utilisateur *</label><input class="inp" id="mu" placeholder="sana.trabelsi"></div>
+      <div class="form-row" style="margin-bottom:0"><label>Username *</label><input class="inp" id="mu" placeholder="sana"></div>
       <div class="form-row" style="margin-bottom:0"><label>Mot de passe *</label><input class="inp" type="password" id="mp"></div>
     </div>
     <div class="form-row"><label>Rôle</label><select class="inp" id="mr"><option value="member">Membre</option><option value="vice">Vice-Président</option><option value="president">Président</option></select></div>
   `,async()=>{
     const name=document.getElementById('mn').value.trim(),username=document.getElementById('mu').value.trim(),password=document.getElementById('mp').value,role=document.getElementById('mr').value;
-    if(!name||!username||!password){toast('Remplissez tous les champs','err');return;}
+    if(!name||!username||!password){toast('Champs requis','err');return;}
     const r=await api('/api/admin/members',{method:'POST',body:JSON.stringify({name,username,password,role})});
-    if(r.ok){addLog('Nouveau membre',`${name} ajouté`);toast('Membre ajouté ✓');closeModal();pgMembers();}else toast(r.error,'err');
+    if(r.ok){addLog('Nouveau membre',name);toast('Membre ajouté ✓');closeModal();pgMembers();}else toast(r.error,'err');
   });
 }
 async function viewMember(id){
@@ -959,80 +920,63 @@ async function viewMember(id){
   const myA=actions.filter(a=>a.assigned_to==id);
   const myM=media.filter(md=>md.uploaded_by==id);
   openModal(m.name,'user',`
-    <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px">
-      <div style="width:52px;height:52px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px">${initials(m.name)}</div>
-      <div><div style="font-size:15px;font-weight:600">@${m.username}</div><div style="margin-top:5px">${roleTag(m.role)}</div></div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+      <div style="width:50px;height:50px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px">${initials(m.name)}</div>
+      <div><div style="font-size:14px;color:var(--text3)">@${m.username}</div><div style="margin-top:4px">${roleTag(m.role)}</div></div>
     </div>
-    <div style="display:flex;gap:8px;margin-bottom:16px"><span class="tag tag-blue"><i class="ti ti-clipboard-list" style="font-size:10px"></i>${myA.length} actions</span><span class="tag tag-gold"><i class="ti ti-photo" style="font-size:10px"></i>${myM.length} médias</span></div>
-    <p style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;margin-bottom:8px">Actions</p>
-    ${myA.map(a=>`<div style="padding:8px 12px;background:var(--bg4);border-radius:var(--r);margin-bottom:5px;display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px">${a.title}</span>${statusTag(a.status)}</div>`).join('')||'<p style="color:var(--text3);font-size:13px;margin-bottom:12px">Aucune action</p>'}
-    <p style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;margin:14px 0 8px">Médias récents</p>
+    <div style="display:flex;gap:8px;margin-bottom:14px"><span class="tag tag-blue">${myA.length} actions</span><span class="tag tag-navy">${myM.length} médias</span></div>
+    <p style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;margin-bottom:8px">Actions</p>
+    ${myA.map(a=>`<div style="padding:8px 12px;background:var(--bg3);border-radius:var(--r);margin-bottom:5px;display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px;font-weight:500">${a.title}</span>${statusTag(a.status)}</div>`).join('')||'<p style="color:var(--text3);font-size:13px;margin-bottom:12px">Aucune action</p>'}
+    <p style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;margin:12px 0 8px">Médias récents</p>
     <div class="gallery-grid" style="grid-template-columns:repeat(4,1fr)">
-      ${myM.slice(-8).map(md=>{const isImg=md.mimetype&&md.mimetype.startsWith('image');return`<div class="g-item" style="height:70px" onclick="openLightbox('${md.url}','${isImg?'image':'video'}')">${isImg?`<img src="${md.url}" loading="lazy">`:`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center"><i class="ti ti-video" style="font-size:20px;color:var(--text3)"></i></div>`}</div>`;}).join('')||'<p style="color:var(--text3);font-size:13px">Aucun média</p>'}
+      ${myM.slice(-8).map(md=>{const isImg=md.mimetype&&md.mimetype.startsWith('image');return`<div class="g-item" style="height:70px" onclick="openLB('${md.url}','${isImg?'image':'video'}')">${isImg?`<img src="${md.url}" loading="lazy">`:`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center"><i class="ti ti-video" style="font-size:18px;color:var(--text3)"></i></div>`}</div>`;}).join('')||'<p style="color:var(--text3);font-size:13px">Aucun média</p>'}
     </div>
   `,null);
 }
 async function uploadForMember(memberId){
   const actions=await api('/api/actions');
-  const myActions=actions.filter(a=>a.assigned_to==memberId);
+  const myA=actions.filter(a=>a.assigned_to==memberId);
   selFiles=[];
   openModal('Uploader pour ce membre','upload',`
-    <div class="form-row"><label>Action</label><select class="inp" id="uaAction"><option value="">Sans action</option>${myActions.map(a=>`<option value="${a.id}">${a.title}</option>`).join('')}</select></div>
+    <div class="form-row"><label>Action</label><select class="inp" id="uaAct"><option value="">Sans action</option>${myA.map(a=>`<option value="${a.id}">${a.title}</option>`).join('')}</select></div>
     <div class="upload-zone" style="margin-top:12px">
-      <input type="file" multiple accept="image/*,video/*" onchange="handleFilesModal(event)">
+      <input type="file" multiple accept="image/*,video/*" onchange="handleFilesM(event)">
       <i class="ti ti-cloud-upload" style="font-size:32px"></i>
-      <p>Cliquez ou glissez les fichiers</p>
+      <p>Cliquez ou glissez</p>
     </div>
-    <div class="preview-grid" id="modalPreview"></div>
+    <div class="preview-grid" id="mPrev"></div>
   `,async()=>{
     if(!selFiles.length){toast('Sélectionnez des fichiers','err');return;}
     const fd=new FormData();selFiles.forEach(f=>fd.append('files',f));
-    const aid=document.getElementById('uaAction')?.value;
-    if(aid)fd.append('action_id',aid);
+    const aid=document.getElementById('uaAct')?.value;if(aid)fd.append('action_id',aid);
     const r=await apiForm('/api/media/upload',fd);
-    if(r.ok){addLog('Upload admin',`${r.files.length} fichier(s) pour membre #${memberId}`);toast(`${r.files.length} fichier(s) ✓`);closeModal();selFiles=[];}
-    else toast(r.error,'err');
+    if(r.ok){addLog('Upload admin',`${r.files.length} fichier(s)`);toast(`${r.files.length} fichier(s) ✓`);closeModal();selFiles=[];}else toast(r.error,'err');
   },'Uploader');
 }
 async function openUploadAction(actionId){
   selFiles=[];
   openModal('Uploader médias','upload',`
     <div class="upload-zone">
-      <input type="file" multiple accept="image/*,video/*" onchange="handleFilesModal(event)">
+      <input type="file" multiple accept="image/*,video/*" onchange="handleFilesM(event)">
       <i class="ti ti-cloud-upload" style="font-size:32px"></i>
-      <p>Cliquez ou glissez vos fichiers</p>
+      <p>Cliquez ou glissez</p>
     </div>
-    <div class="preview-grid" id="modalPreview"></div>
+    <div class="preview-grid" id="mPrev"></div>
   `,async()=>{
     if(!selFiles.length){toast('Sélectionnez des fichiers','err');return;}
-    const fd=new FormData();selFiles.forEach(f=>fd.append('files',f));
-    fd.append('action_id',actionId);
+    const fd=new FormData();selFiles.forEach(f=>fd.append('files',f));fd.append('action_id',actionId);
     const r=await apiForm('/api/media/upload',fd);
-    if(r.ok){addLog('Upload action',`${r.files.length} fichier(s) sur action #${actionId}`);toast(`${r.files.length} fichier(s) ✓`);closeModal();selFiles=[];}
-    else toast(r.error,'err');
+    if(r.ok){addLog('Upload',`${r.files.length} fichier(s)`);toast(`${r.files.length} fichier(s) ✓`);closeModal();selFiles=[];}else toast(r.error,'err');
   },'Uploader');
 }
-function handleFilesModal(e){
-  const files=Array.from(e.target.files||[]);
-  selFiles=[...selFiles,...files];
-  const grid=document.getElementById('modalPreview');
-  files.forEach(f=>{
-    const div=document.createElement('div');div.className='prev-item';
-    if(f.type.startsWith('image')){const r=new FileReader();r.onload=ev=>{div.innerHTML=`<img src="${ev.target.result}">`;};r.readAsDataURL(f);}
-    else div.innerHTML=`<i class="ti ti-video"></i>`;
-    grid.appendChild(div);
-  });
+function handleFilesM(e){
+  const files=Array.from(e.target.files||[]);selFiles=[...selFiles,...files];
+  const grid=document.getElementById('mPrev');
+  files.forEach(f=>{const div=document.createElement('div');div.className='prev-item';if(f.type.startsWith('image')){const r=new FileReader();r.onload=ev=>{div.innerHTML=`<img src="${ev.target.result}">`;};r.readAsDataURL(f);}else div.innerHTML=`<i class="ti ti-video"></i>`;grid.appendChild(div);});
 }
 
 (async()=>{
-  try{
-    const me=await api('/api/me');
-    if(me&&me.id){
-      CU=me;
-      if(me.status==='pending'){document.getElementById('authScreen').style.display='none';document.getElementById('pendingScreen').style.display='flex';}
-      else startApp();
-    }
-  }catch(e){}
+  try{const me=await api('/api/me');if(me&&me.id){CU=me;if(me.status==='pending'){document.getElementById('authScreen').style.display='none';document.getElementById('pendingScreen').style.display='flex';}else startApp();}}catch(e){}
 })();
 </script>
 </body>
