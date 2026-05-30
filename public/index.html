@@ -372,7 +372,7 @@ tr:hover td{background:var(--bg3)}
       <label class="fl">Mot de passe</label>
       <input class="inp" id="liPass" type="password" placeholder="••••••" onkeydown="if(event.key==='Enter')doLogin()">
       <button class="btn-auth" onclick="doLogin()"><i class="ti ti-login" style="font-size:16px;vertical-align:-2px;margin-right:6px"></i>Se connecter</button>
-      <div class="auth-hint"><strong>Démo :</strong> admin/admin123 · president/crt2024 · sana/crt2024</div>
+      
     </div>
     <div id="registerPanel" style="display:none">
       <div class="auth-msg auth-err" id="regErr"></div>
@@ -477,12 +477,12 @@ function isAdmin(u){return u&&['admin','president','vice'].includes(u.role)}
 function bytesLabel(b){if(b>1e6)return(b/1e6).toFixed(1)+' MB';if(b>1e3)return Math.round(b/1e3)+' KB';return(b||0)+' B'}
 function escJ(s){return(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,' ')}
 
-function openLB(url,type,name){
-  currentLBUrl=url; currentLBName=name||'media';
+function openLB(url,type,name,id){
+  currentLBUrl=url; currentLBName=name||'media'; currentLBId=id||null;
   document.getElementById('lbContent').innerHTML=type==='image'?`<img src="${url}">`:`<video src="${url}" controls autoplay style="max-width:94vw;max-height:88vh">`;
   document.getElementById('lb').classList.add('open');
 }
-function dlCurrent(){ dlMedia(currentLBUrl, currentLBName); }
+function dlCurrent(){ dlMedia(currentLBUrl, currentLBName, currentLBId); }
 function closeLB(){document.getElementById('lb').classList.remove('open')}
 document.getElementById('lb').addEventListener('click',e=>{if(e.target===document.getElementById('lb'))closeLB()});
 
@@ -774,7 +774,7 @@ async function pgMedia(){
           ${isImg?`<img src="${m.url}" loading="lazy">`:`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--bg4)"><i class="ti ti-video" style="font-size:32px;color:var(--text3)"></i></div>`}
           <div class="g-type"><i class="ti ti-${isImg?'photo':'video'}" style="font-size:10px"></i>${isImg?'Photo':'Vidéo'}</div>
           <div class="g-ov"><i class="ti ti-eye"></i></div>
-          <div class="g-dl" onclick="event.stopPropagation();dlMedia('${m.url}','${(m.original_name||'media').replace(/'/g,'')}')" title="Télécharger"><i class="ti ti-download" style="font-size:11px"></i></div>
+          <div class="g-dl" onclick="event.stopPropagation();dlMedia('${m.url}','${(m.original_name||'media').replace(/'/g,'')}',${m.id})" title="Télécharger"><i class="ti ti-download" style="font-size:11px"></i></div>
           <div class="g-del" onclick="event.stopPropagation();delMedia(${m.id})"><i class="ti ti-trash" style="font-size:11px"></i></div>
         </div><div class="g-cap">${(m.uploader_name||'?').split(' ')[0]} · ${(m.action_title||'—').slice(0,14)}</div></div>`;
       }).join('')}</div>`:`<div class="empty"><i class="ti ti-photo-off"></i><h4>Aucun média</h4><p>Aucun fichier uploadé</p></div>`}
@@ -898,7 +898,7 @@ async function pgMyMedia(){
           ${isImg?`<img src="${m.url}" loading="lazy">`:`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center"><i class="ti ti-video" style="font-size:32px;color:var(--text3)"></i></div>`}
           <div class="g-type"><i class="ti ti-${isImg?'photo':'video'}" style="font-size:10px"></i></div>
           <div class="g-ov"><i class="ti ti-eye"></i></div>
-          <div class="g-dl" onclick="event.stopPropagation();dlMedia('${m.url}','${(m.original_name||'media').replace(/'/g,'')}')" title="Télécharger"><i class="ti ti-download" style="font-size:11px"></i></div>
+          <div class="g-dl" onclick="event.stopPropagation();dlMedia('${m.url}','${(m.original_name||'media').replace(/'/g,'')}',${m.id})" title="Télécharger"><i class="ti ti-download" style="font-size:11px"></i></div>
           <div class="g-del" onclick="event.stopPropagation();delMedia(${m.id})"><i class="ti ti-trash" style="font-size:11px"></i></div>
         </div><div class="g-cap">${m.action_title?m.action_title.slice(0,18):'—'} · ${bytesLabel(m.size||0)}</div></div>`;
       }).join('')}</div>`:`<div class="empty"><i class="ti ti-photo-off"></i><h4>Aucun média</h4><p>Uploadez vos premières photos</p></div>`}
@@ -1027,33 +1027,29 @@ function handleFilesM(e){
   files.forEach(f=>{const div=document.createElement('div');div.className='prev-item';if(f.type.startsWith('image')){const r=new FileReader();r.onload=ev=>{div.innerHTML=`<img src="${ev.target.result}">`;};r.readAsDataURL(f);}else div.innerHTML=`<i class="ti ti-video"></i>`;grid.appendChild(div);});
 }
 
-async function dlMedia(url, name){
-  const isVideo = url.match(/\.(mp4|mov|avi|mkv|webm)/i) || 
-                  (url.includes('cloudinary.com') && url.includes('/video/'));
-  const ext = isVideo ? '.mp4' : '.jpg';
-  const filename = (name || 'media') + (name && name.includes('.') ? '' : ext);
-
-  // Build Cloudinary download URL
-  let dlUrl = url;
-  if(url && url.includes('cloudinary.com')){
-    dlUrl = url.replace('/upload/', '/upload/fl_attachment/');
-  }
-
+async function dlMedia(url, name, mediaId){
+  toast('Téléchargement en cours...', 'ok');
   try {
-    // Fetch the file as blob
-    toast('Téléchargement en cours...', 'ok');
-    const resp = await fetch(dlUrl);
+    // Use our server proxy to avoid CORS issues
+    const proxyUrl = mediaId ? `/api/download/${mediaId}` : url;
+    
+    const resp = await fetch(proxyUrl, {credentials: 'include'});
     if(!resp.ok) throw new Error('fetch failed');
     const blob = await resp.blob();
+    const filename = name || 'media';
 
-    // Try Web Share API (iOS 14+, Android) — saves to Photos/Gallery
+    // Try Web Share API — saves directly to Photos/Gallery on mobile
     if(navigator.canShare && navigator.canShare({files:[new File([blob], filename, {type: blob.type})]})){
       const file = new File([blob], filename, {type: blob.type});
-      await navigator.share({files:[file], title: filename});
-      return;
+      try {
+        await navigator.share({files:[file], title: 'CRT Megrine'});
+        return;
+      } catch(shareErr){
+        if(shareErr.name === 'AbortError') return; // user cancelled
+      }
     }
 
-    // Fallback: standard download link
+    // Fallback: blob download link
     const blobUrl = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = blobUrl;
@@ -1061,16 +1057,17 @@ async function dlMedia(url, name){
     document.body.appendChild(a);
     a.click();
     setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(blobUrl); }, 1000);
+    toast('Fichier téléchargé ✓', 'ok');
 
   } catch(e) {
-    // Last fallback: open in new tab (user can long-press save on mobile)
-    window.open(dlUrl, '_blank');
-    toast('Appuyez longuement sur le fichier pour enregistrer', 'ok');
+    toast('Erreur — ouverture dans le navigateur', 'err');
+    window.open(url, '_blank');
   }
 }
 
 let currentLBUrl = '';
 let currentLBName = '';
+let currentLBId = null;
 
 function openPicker(type){
   if(type==='camera') document.getElementById('filePickerCamera').click();
@@ -1089,7 +1086,7 @@ function openPicker(type){
   </div>
   <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">
     <button onclick="installPWA()" style="background:var(--red);border:none;color:#fff;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">Installer</button>
-    <button onclick="document.getElementById('pwaPrompt').style.display='none'" style="background:rgba(255,255,255,0.15);border:none;color:#fff;padding:4px 12px;border-radius:8px;font-size:11px;cursor:pointer;font-family:inherit">Plus tard</button>
+    <button onclick="document.getElementById('pwaPrompt').style.display='none';setTimeout(()=>{if(deferredPrompt){document.getElementById('pwaPrompt').style.display='flex';}},60000)" style="background:rgba(255,255,255,0.15);border:none;color:#fff;padding:4px 12px;border-radius:8px;font-size:11px;cursor:pointer;font-family:inherit">Plus tard</button>
   </div>
 </div>
 
@@ -1111,18 +1108,32 @@ let deferredPrompt;
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
   deferredPrompt = e;
+  // Show prompt after 2s — always show unless already installed
   setTimeout(() => {
     const p = document.getElementById('pwaPrompt');
-    if(p && !localStorage.getItem('pwa-dismissed')) p.style.display='flex';
-  }, 3000);
+    if(p) p.style.display='flex';
+  }, 2000);
 });
 function installPWA(){
-  document.getElementById('pwaPrompt').style.display='none';
-  localStorage.setItem('pwa-dismissed','1');
-  if(deferredPrompt){ deferredPrompt.prompt(); deferredPrompt=null; }
+  const p = document.getElementById('pwaPrompt');
+  if(p) p.style.display='none';
+  if(deferredPrompt){
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(choice => {
+      if(choice.outcome === 'accepted'){
+        toast('App installée avec succès !', 'ok');
+      } else {
+        // User dismissed — show again next visit
+        setTimeout(() => { if(p) p.style.display='flex'; }, 30000);
+      }
+      deferredPrompt = null;
+    });
+  }
 }
 window.addEventListener('appinstalled', () => {
-  document.getElementById('pwaPrompt').style.display='none';
+  const p = document.getElementById('pwaPrompt');
+  if(p) p.style.display='none';
+  toast('CRT Megrine installée !', 'ok');
 });
 
 // iOS detection
