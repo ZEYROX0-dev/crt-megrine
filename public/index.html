@@ -1027,21 +1027,46 @@ function handleFilesM(e){
   files.forEach(f=>{const div=document.createElement('div');div.className='prev-item';if(f.type.startsWith('image')){const r=new FileReader();r.onload=ev=>{div.innerHTML=`<img src="${ev.target.result}">`;};r.readAsDataURL(f);}else div.innerHTML=`<i class="ti ti-video"></i>`;grid.appendChild(div);});
 }
 
-function dlMedia(url, name){
-  // Add fl_attachment to Cloudinary URL for direct download
+async function dlMedia(url, name){
+  const isVideo = url.match(/\.(mp4|mov|avi|mkv|webm)/i) || 
+                  (url.includes('cloudinary.com') && url.includes('/video/'));
+  const ext = isVideo ? '.mp4' : '.jpg';
+  const filename = (name || 'media') + (name && name.includes('.') ? '' : ext);
+
+  // Build Cloudinary download URL
   let dlUrl = url;
   if(url && url.includes('cloudinary.com')){
-    // Insert fl_attachment flag for forced download
     dlUrl = url.replace('/upload/', '/upload/fl_attachment/');
   }
-  const a = document.createElement('a');
-  a.href = dlUrl;
-  a.download = name || 'media';
-  a.target = '_blank';
-  a.rel = 'noopener';
-  document.body.appendChild(a);
-  a.click();
-  setTimeout(() => document.body.removeChild(a), 100);
+
+  try {
+    // Fetch the file as blob
+    toast('Téléchargement en cours...', 'ok');
+    const resp = await fetch(dlUrl);
+    if(!resp.ok) throw new Error('fetch failed');
+    const blob = await resp.blob();
+
+    // Try Web Share API (iOS 14+, Android) — saves to Photos/Gallery
+    if(navigator.canShare && navigator.canShare({files:[new File([blob], filename, {type: blob.type})]})){
+      const file = new File([blob], filename, {type: blob.type});
+      await navigator.share({files:[file], title: filename});
+      return;
+    }
+
+    // Fallback: standard download link
+    const blobUrl = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(blobUrl); }, 1000);
+
+  } catch(e) {
+    // Last fallback: open in new tab (user can long-press save on mobile)
+    window.open(dlUrl, '_blank');
+    toast('Appuyez longuement sur le fichier pour enregistrer', 'ok');
+  }
 }
 
 let currentLBUrl = '';
