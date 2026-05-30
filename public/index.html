@@ -2,8 +2,15 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>CRT Megrine — Département Média</title>
+<meta name="theme-color" content="#1e3a5f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="CRT Megrine">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/logo.jpg">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -197,6 +204,8 @@ tr:hover td{background:var(--bg3)}
 .g-cap{padding:5px 8px;font-size:10px;color:var(--text3);background:var(--bg2);border-top:1px solid var(--border);line-height:1.3}
 .g-type{position:absolute;top:6px;left:6px;background:rgba(0,0,0,0.6);color:#fff;border-radius:4px;padding:2px 6px;font-size:10px;font-weight:700;display:flex;align-items:center;gap:3px}
 .g-del{position:absolute;top:5px;right:5px;width:24px;height:24px;background:var(--red);border-radius:50%;display:none;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:12px}
+.g-dl{position:absolute;top:5px;left:5px;width:24px;height:24px;background:var(--navy);border-radius:50%;display:none;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:12px}
+.g-item:hover .g-dl{display:flex}
 .g-item:hover .g-del{display:flex}
 
 /* UPLOAD */
@@ -363,7 +372,7 @@ tr:hover td{background:var(--bg3)}
       <label class="fl">Mot de passe</label>
       <input class="inp" id="liPass" type="password" placeholder="••••••" onkeydown="if(event.key==='Enter')doLogin()">
       <button class="btn-auth" onclick="doLogin()"><i class="ti ti-login" style="font-size:16px;vertical-align:-2px;margin-right:6px"></i>Se connecter</button>
-     
+      <div class="auth-hint"><strong>Démo :</strong> admin/admin123 · president/crt2024 · sana/crt2024</div>
     </div>
     <div id="registerPanel" style="display:none">
       <div class="auth-msg auth-err" id="regErr"></div>
@@ -448,7 +457,7 @@ tr:hover td{background:var(--bg3)}
   </div>
 </div>
 
-<div id="lb"><button id="lb-close" onclick="closeLB()"><i class="ti ti-x"></i></button><div id="lbContent"></div></div>
+<div id="lb"><button id="lb-close" onclick="closeLB()"><i class="ti ti-x"></i></button><button id="lb-dl" style="position:absolute;top:14px;left:18px;color:#fff;font-size:22px;cursor:pointer;background:rgba(255,255,255,0.15);border:none;border-radius:8px;padding:6px 10px;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;font-family:inherit" onclick="dlCurrent()"><i class="ti ti-download" style="font-size:18px"></i> Télécharger</button><div id="lbContent"></div></div>
 <div id="toast"></div>
 
 <script>
@@ -468,7 +477,12 @@ function isAdmin(u){return u&&['admin','president','vice'].includes(u.role)}
 function bytesLabel(b){if(b>1e6)return(b/1e6).toFixed(1)+' MB';if(b>1e3)return Math.round(b/1e3)+' KB';return(b||0)+' B'}
 function escJ(s){return(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,' ')}
 
-function openLB(url,type){document.getElementById('lbContent').innerHTML=type==='image'?`<img src="${url}">`:`<video src="${url}" controls autoplay style="max-width:94vw;max-height:88vh">`;document.getElementById('lb').classList.add('open');}
+function openLB(url,type,name){
+  currentLBUrl=url; currentLBName=name||'media';
+  document.getElementById('lbContent').innerHTML=type==='image'?`<img src="${url}">`:`<video src="${url}" controls autoplay style="max-width:94vw;max-height:88vh">`;
+  document.getElementById('lb').classList.add('open');
+}
+function dlCurrent(){ dlMedia(currentLBUrl, currentLBName); }
 function closeLB(){document.getElementById('lb').classList.remove('open')}
 document.getElementById('lb').addEventListener('click',e=>{if(e.target===document.getElementById('lb'))closeLB()});
 
@@ -760,6 +774,7 @@ async function pgMedia(){
           ${isImg?`<img src="${m.url}" loading="lazy">`:`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--bg4)"><i class="ti ti-video" style="font-size:32px;color:var(--text3)"></i></div>`}
           <div class="g-type"><i class="ti ti-${isImg?'photo':'video'}" style="font-size:10px"></i>${isImg?'Photo':'Vidéo'}</div>
           <div class="g-ov"><i class="ti ti-eye"></i></div>
+          <div class="g-dl" onclick="event.stopPropagation();dlMedia('${m.url}','${(m.original_name||'media').replace(/'/g,'')}')" title="Télécharger"><i class="ti ti-download" style="font-size:11px"></i></div>
           <div class="g-del" onclick="event.stopPropagation();delMedia(${m.id})"><i class="ti ti-trash" style="font-size:11px"></i></div>
         </div><div class="g-cap">${(m.uploader_name||'?').split(' ')[0]} · ${(m.action_title||'—').slice(0,14)}</div></div>`;
       }).join('')}</div>`:`<div class="empty"><i class="ti ti-photo-off"></i><h4>Aucun média</h4><p>Aucun fichier uploadé</p></div>`}
@@ -824,10 +839,16 @@ async function pgUpload(){
       </div>
       <div class="form-row" style="margin-top:14px"><label>Fichiers</label>
         <div class="upload-zone" id="dz">
-          <input type="file" multiple accept="image/*,video/*" onchange="handleFiles(event)">
+          <input type="file" multiple accept="image/*,video/*" id="filePickerMain" onchange="handleFiles(event)" style="display:none">
           <i class="ti ti-cloud-upload"></i>
-          <h4>Glissez vos fichiers ici</h4>
-          <p>Photos &amp; vidéos · Aucune limite de taille</p>
+          <h4>Ajouter des médias</h4>
+          <p style="margin-bottom:14px">Photos &amp; vidéos · Aucune limite de taille</p>
+          <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+            <button type="button" onclick="event.stopPropagation();openPicker('gallery')" style="display:flex;align-items:center;gap:6px;padding:8px 16px;background:var(--navy);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit"><i class="ti ti-photo" style="font-size:16px"></i>Galerie</button>
+            <button type="button" onclick="event.stopPropagation();openPicker('camera')" style="display:flex;align-items:center;gap:6px;padding:8px 16px;background:var(--red);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit"><i class="ti ti-camera" style="font-size:16px"></i>Caméra</button>
+          </div>
+          <input type="file" multiple accept="image/*,video/*" id="filePickerGallery" onchange="handleFiles(event)" style="display:none">
+          <input type="file" multiple accept="image/*,video/*" capture="environment" id="filePickerCamera" onchange="handleFiles(event)" style="display:none">
         </div>
         <div class="preview-grid" id="prevGrid"></div>
       </div>
@@ -877,6 +898,7 @@ async function pgMyMedia(){
           ${isImg?`<img src="${m.url}" loading="lazy">`:`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center"><i class="ti ti-video" style="font-size:32px;color:var(--text3)"></i></div>`}
           <div class="g-type"><i class="ti ti-${isImg?'photo':'video'}" style="font-size:10px"></i></div>
           <div class="g-ov"><i class="ti ti-eye"></i></div>
+          <div class="g-dl" onclick="event.stopPropagation();dlMedia('${m.url}','${(m.original_name||'media').replace(/'/g,'')}')" title="Télécharger"><i class="ti ti-download" style="font-size:11px"></i></div>
           <div class="g-del" onclick="event.stopPropagation();delMedia(${m.id})"><i class="ti ti-trash" style="font-size:11px"></i></div>
         </div><div class="g-cap">${m.action_title?m.action_title.slice(0,18):'—'} · ${bytesLabel(m.size||0)}</div></div>`;
       }).join('')}</div>`:`<div class="empty"><i class="ti ti-photo-off"></i><h4>Aucun média</h4><p>Uploadez vos premières photos</p></div>`}
@@ -1005,9 +1027,99 @@ function handleFilesM(e){
   files.forEach(f=>{const div=document.createElement('div');div.className='prev-item';if(f.type.startsWith('image')){const r=new FileReader();r.onload=ev=>{div.innerHTML=`<img src="${ev.target.result}">`;};r.readAsDataURL(f);}else div.innerHTML=`<i class="ti ti-video"></i>`;grid.appendChild(div);});
 }
 
+function dlMedia(url, name){
+  // Mobile-friendly download
+  fetch(url)
+    .then(r => r.blob())
+    .then(blob => {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = name || 'media';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(a.href);
+    })
+    .catch(() => {
+      // Fallback: open in new tab
+      window.open(url, '_blank');
+    });
+}
+
+let currentLBUrl = '';
+let currentLBName = '';
+
+function openPicker(type){
+  if(type==='camera') document.getElementById('filePickerCamera').click();
+  else document.getElementById('filePickerGallery').click();
+}
+
 (async()=>{
   try{const me=await api('/api/me');if(me&&me.id){CU=me;if(me.status==='pending'){document.getElementById('authScreen').style.display='none';document.getElementById('pendingScreen').style.display='flex';}else startApp();}}catch(e){}
 })();
+</script>
+<div id="pwaPrompt" style="display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:14px 20px;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,0.3);z-index:500;display:flex;align-items:center;gap:12px;max-width:320px;width:calc(100% - 32px)">
+  <img src="/logo.jpg" style="width:40px;height:40px;border-radius:50%;flex-shrink:0">
+  <div style="flex:1">
+    <div style="font-size:13px;font-weight:700">Installer l'app CRT</div>
+    <div style="font-size:11px;opacity:.7;margin-top:2px">Accès rapide depuis l'écran d'accueil</div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">
+    <button onclick="installPWA()" style="background:var(--red);border:none;color:#fff;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">Installer</button>
+    <button onclick="document.getElementById('pwaPrompt').style.display='none'" style="background:rgba(255,255,255,0.15);border:none;color:#fff;padding:4px 12px;border-radius:8px;font-size:11px;cursor:pointer;font-family:inherit">Plus tard</button>
+  </div>
+</div>
+
+<div id="iosPrompt" style="display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:14px 18px;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,0.3);z-index:500;max-width:300px;width:calc(100% - 32px);text-align:center">
+  <img src="/logo.jpg" style="width:48px;height:48px;border-radius:12px;margin-bottom:8px">
+  <div style="font-size:13px;font-weight:700;margin-bottom:6px">Installer CRT Megrine</div>
+  <div style="font-size:12px;opacity:.8;line-height:1.5">Appuyez sur <strong>⎋ Partager</strong> puis <strong>"Sur l'écran d'accueil"</strong></div>
+  <button onclick="document.getElementById('iosPrompt').style.display='none'" style="margin-top:10px;background:rgba(255,255,255,0.15);border:none;color:#fff;padding:6px 16px;border-radius:8px;font-size:12px;cursor:pointer;font-family:inherit">OK</button>
+</div>
+
+<script>
+// Service Worker
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('/sw.js').catch(()=>{});
+}
+
+// PWA Install
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  setTimeout(() => {
+    const p = document.getElementById('pwaPrompt');
+    if(p && !localStorage.getItem('pwa-dismissed')) p.style.display='flex';
+  }, 3000);
+});
+function installPWA(){
+  document.getElementById('pwaPrompt').style.display='none';
+  localStorage.setItem('pwa-dismissed','1');
+  if(deferredPrompt){ deferredPrompt.prompt(); deferredPrompt=null; }
+}
+window.addEventListener('appinstalled', () => {
+  document.getElementById('pwaPrompt').style.display='none';
+});
+
+// iOS detection
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+const isInStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+if(isIOS && !isInStandalone && !localStorage.getItem('ios-dismissed')){
+  setTimeout(() => {
+    const p = document.getElementById('iosPrompt');
+    if(p) { p.style.display='block'; localStorage.setItem('ios-dismissed','1'); }
+  }, 4000);
+}
+
+// Mobile upload fix — replace capture with file picker that shows both
+document.addEventListener('DOMContentLoaded', () => {
+  // On mobile, show choice between camera and gallery
+  document.querySelectorAll('input[type=file][accept*="video"]').forEach(inp => {
+    // Remove capture to allow both camera and gallery on mobile
+    inp.removeAttribute('capture');
+  });
+});
 </script>
 </body>
 </html>
