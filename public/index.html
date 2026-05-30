@@ -1028,22 +1028,20 @@ function handleFilesM(e){
 }
 
 function dlMedia(url, name){
-  // Mobile-friendly download
-  fetch(url)
-    .then(r => r.blob())
-    .then(blob => {
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = name || 'media';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(a.href);
-    })
-    .catch(() => {
-      // Fallback: open in new tab
-      window.open(url, '_blank');
-    });
+  // Add fl_attachment to Cloudinary URL for direct download
+  let dlUrl = url;
+  if(url && url.includes('cloudinary.com')){
+    // Insert fl_attachment flag for forced download
+    dlUrl = url.replace('/upload/', '/upload/fl_attachment/');
+  }
+  const a = document.createElement('a');
+  a.href = dlUrl;
+  a.download = name || 'media';
+  a.target = '_blank';
+  a.rel = 'noopener';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => document.body.removeChild(a), 100);
 }
 
 let currentLBUrl = '';
