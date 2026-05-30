@@ -80,7 +80,7 @@ const storage = multer.diskStorage({
     cb(null, Date.now() + '-' + Math.random().toString(36).slice(2) + ext);
   }
 });
-const upload = multer({ storage, limits: { fileSize: 100 * 1024 * 1024 } });
+const upload = multer({ storage });
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
